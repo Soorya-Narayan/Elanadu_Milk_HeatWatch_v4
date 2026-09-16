@@ -1,38 +1,37 @@
 /* ==========================================================================
    HeatWatch 4 — Elanadu Milk Edition
-   Exact HeatWatch Version 3 UI Aesthetic & Design System
+   Exact HeatWatch Version 3 UI Stylesheet
    ========================================================================== */
 
-/* --- DARK MODE THEME --- */
+/* DARK MODE VARS (Exact match to HeatWatch 3 screenshots) */
 body.theme-dark {
-  --bg-app: #06070a;
-  --bg-header: #0a0c12;
+  --bg-app: #050608;
+  --bg-header: #0b0d14;
+  --bg-panel: #0c0e15;
   --bg-card: #0e111a;
-  --bg-card-hover: #131724;
-  --bg-btn: #161a26;
-  --bg-btn-hover: #202638;
+  --bg-btn: #141824;
+  --bg-btn-hover: #1f2538;
 
-  --border-app: #181d2c;
-  --border-subtle: #20263a;
+  --border-app: #1a1f2e;
+  --border-subtle: #252b3d;
 
   --text-main: #ffffff;
   --text-muted: #8e9bb0;
   --text-subtle: #596579;
 
   --color-cyan: #00e5ff;
-  --color-cyan-glow: rgba(0, 229, 255, 0.25);
-  --color-blue: #0066ff;
-  --color-green: #00e676;
+  --color-blue: #2979ff;
+  --color-green: #00c853;
   --color-warning: #ffc400;
   --color-critical: #ff1744;
 }
 
-/* --- LIGHT MODE THEME --- */
+/* LIGHT MODE VARS */
 body.theme-light {
-  --bg-app: #edf1f7;
+  --bg-app: #eef2f7;
   --bg-header: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-card: #f8fafc;
   --bg-btn: #e2e8f0;
   --bg-btn-hover: #cbd5e1;
 
@@ -44,7 +43,6 @@ body.theme-light {
   --text-subtle: #94a3b8;
 
   --color-cyan: #0088cc;
-  --color-cyan-glow: rgba(0, 136, 204, 0.2);
   --color-blue: #0052cc;
   --color-green: #00a854;
   --color-warning: #d99b00;
@@ -67,125 +65,116 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-.app-layout {
+.app-shell-hw3 {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
 /* ==========================================================================
-   1. SPLASH LOADING SCREEN (HeatWatch 3 Style)
+   SCREENSHOT 1: SPLASH LOADING SCREEN
    ========================================================================== */
-.splash-overlay {
+.splash-screen-hw3 {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0; width: 100vw; height: 100vh;
   background: #000000;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
-.splash-overlay.fade-out {
+.splash-screen-hw3.fade-out {
   opacity: 0;
   visibility: hidden;
 }
 
-.splash-center {
+.splash-content-hw3 {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 420px;
 }
 
-.splash-goose-glow {
-  margin-bottom: 24px;
-}
-
-.splash-goose-img {
-  height: 70px;
+.splash-cyan-goose {
+  height: 75px;
   width: auto;
-  filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.8));
-  animation: pulse-goose 2s infinite alternate;
+  filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.85));
+  animation: goose-aura 2s infinite alternate;
 }
 
-@keyframes pulse-goose {
-  from { transform: scale(0.95); filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.5)); }
-  to { transform: scale(1.08); filter: drop-shadow(0 0 35px rgba(0, 229, 255, 0.9)); }
+@keyframes goose-aura {
+  from { transform: scale(0.96); filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.5)); }
+  to { transform: scale(1.06); filter: drop-shadow(0 0 35px rgba(0, 229, 255, 0.95)); }
 }
 
-.splash-client-branding {
+.splash-elanadu-tag {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin: 24px 0 20px 0;
 }
 
-.splash-elanadu-img {
+.splash-elanadu-logo {
   height: 48px;
   width: auto;
 }
 
-.splash-system-title {
+.splash-system-name {
   font-size: 1.8rem;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.02em;
 }
 
-.splash-progress {
-  width: 240px;
+.splash-progress-track {
+  width: 220px;
   height: 4px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-.splash-progress-bar {
-  width: 0%;
+.splash-progress-fill {
   height: 100%;
+  width: 0%;
   background: var(--color-cyan);
   transition: width 0.2s ease;
 }
 
-.splash-tagline {
+.splash-powered-tagline {
   font-size: 0.8rem;
   color: #64748b;
   font-family: 'JetBrains Mono', monospace;
 }
 
 /* ==========================================================================
-   TOP NAVBAR HEADER (HeatWatch 3 Screenshot 2 Layout)
+   SCREENSHOT 2: HEADER NAVBAR PANEL
    ========================================================================== */
-.app-header {
+.hw3-header-panel {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 24px;
   background: var(--bg-header);
   border-bottom: 1px solid var(--border-app);
-  height: 60px;
+  height: 62px;
 }
 
-.header-left {
+.header-left-brand {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.goose-header-icon {
+.header-goose-icon {
   height: 32px;
   width: auto;
   filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
 }
 
-.elanadu-header-logo {
+.header-elanadu-logo {
   height: 36px;
   width: auto;
   object-fit: contain;
@@ -193,35 +182,33 @@ body {
   padding-left: 14px;
 }
 
-.header-center {
+.header-center-title {
   flex: 1;
   text-align: center;
 }
 
-.system-title {
-  font-size: 1.5rem;
+.hw3-main-title {
+  font-size: 1.55rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #ffffff 0%, var(--color-cyan) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff;
 }
 
-.header-right {
+.header-right-controls {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* HeatWatch 3 Icon Buttons (Rounded Squares) */
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+/* HeatWatch 3 Rounded Square Buttons (Screenshot 2) */
+.hw3-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   background: var(--bg-btn);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,16 +216,16 @@ body {
   transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
+.hw3-icon-btn:hover {
   background: var(--bg-btn-hover);
   border-color: var(--color-cyan);
   color: var(--color-cyan);
 }
 
-/* --- SUB-NAVBAR TABS --- */
-.subnav-tabs {
+/* --- TAB SELECTOR BAR --- */
+.hw3-tab-selector-bar {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   padding: 0 24px;
   background: var(--bg-header);
   border-bottom: 1px solid var(--border-app);
@@ -246,11 +233,11 @@ body {
   align-items: center;
 }
 
-.subnav-tab {
+.hw3-tab-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 18px;
+  padding: 0 20px;
   height: 100%;
   background: transparent;
   border: none;
@@ -262,38 +249,38 @@ body {
   transition: all 0.2s ease;
 }
 
-.subnav-tab.active {
+.hw3-tab-btn.active {
   color: var(--color-cyan);
   border-bottom-color: var(--color-cyan);
   background: rgba(0, 229, 255, 0.05);
 }
 
-.subnav-tab:hover:not(.active) {
+.hw3-tab-btn:hover:not(.active) {
   color: var(--text-main);
 }
 
 /* --- MAIN VIEWPORT --- */
-.main-viewport {
+.hw3-main-viewport {
   flex: 1;
   padding: 16px 24px;
   overflow: hidden;
-  height: calc(100vh - 128px);
+  height: calc(100vh - 130px);
 }
 
-.tab-pane {
+.hw3-pane {
   display: none;
   height: 100%;
 }
 
-.tab-pane.active {
+.hw3-pane.active {
   display: flex;
   flex-direction: column;
 }
 
 /* ==========================================================================
-   TAB 1: REAL-TIME TELEMETRY (HeatWatch 3 Screenshot 2 Layout: 2 rows x 4 cols)
+   SCREENSHOT 2: REAL-TIME TELEMETRY GRID (2 ROWS x 4 COLUMNS)
    ========================================================================== */
-.sensor-grid-2x4 {
+.hw3-grid-2x4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(2, 1fr);
@@ -302,8 +289,8 @@ body {
   width: 100%;
 }
 
-.hw3-card {
-  background: var(--bg-card);
+.hw3-card-v3 {
+  background: var(--bg-panel);
   border: 1px solid var(--border-app);
   border-radius: 14px;
   padding: 16px 18px;
@@ -311,22 +298,20 @@ body {
   flex-direction: column;
   justify-content: space-between;
   transition: all 0.2s ease;
-  position: relative;
 }
 
-.hw3-card:hover {
-  background: var(--bg-card-hover);
+.hw3-card-v3:hover {
+  background: var(--bg-card);
   border-color: var(--border-subtle);
-  transform: translateY(-2px);
 }
 
-.hw3-card-top {
+.hw3-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.hw3-ch-badge {
+.hw3-badge-ch {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   font-weight: 700;
@@ -336,94 +321,78 @@ body {
   border-radius: 12px;
 }
 
-.hw3-status-pill {
-  font-size: 0.7rem;
+.hw3-pill-status {
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted);
-
+  padding: 4px 12px;
+  border-radius: 14px;
+  background: #181d28;
+  color: #8a96a8;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.hw3-status-pill.online {
-  background: rgba(0, 230, 118, 0.15);
-  color: var(--color-green);
-}
+.hw3-pill-status.online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); }
+.hw3-pill-status.warning { background: rgba(255, 196, 0, 0.2); color: var(--color-warning); }
+.hw3-pill-status.critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); }
 
-.hw3-status-pill.warning {
-  background: rgba(255, 196, 0, 0.2);
-  color: var(--color-warning);
-}
-
-.hw3-status-pill.critical {
-  background: rgba(255, 23, 68, 0.25);
-  color: var(--color-critical);
-}
-
-.hw3-ch-title {
+.hw3-process-name {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: #ffffff;
   margin-top: 10px;
   line-height: 1.25;
   height: 2.5em;
   overflow: hidden;
 }
 
-.hw3-temp-box {
-  margin: 10px 0;
+.hw3-temp-display {
   display: flex;
   align-items: baseline;
   gap: 6px;
+  margin: 10px 0;
 }
 
 .hw3-temp-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 2.8rem;
+  font-size: 3rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: #ffffff;
   line-height: 1;
 }
 
 .hw3-temp-unit {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.hw3-bar-divider {
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
+.hw3-line-divider {
+  height: 2px;
+  background: var(--border-subtle);
+  border-radius: 1px;
   margin-bottom: 8px;
-  overflow: hidden;
 }
 
-.hw3-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-cyan), var(--color-green));
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-.hw3-card-bottom {
+.hw3-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 0.72rem;
-  color: var(--text-muted);
+  color: #8a96a8;
   font-family: 'JetBrains Mono', monospace;
 }
 
+.hw3-just-now {
+  color: #525c6e;
+}
+
 /* ==========================================================================
-   TAB 2 & 3: TRENDS & HISTORY PANELS (HeatWatch 3 Screenshots 3 & 4)
+   SCREENSHOT 3 & 4: TRENDS & HISTORY PANELS
    ========================================================================== */
-.panel-box {
-  background: var(--bg-card);
+.hw3-container-panel {
+  background: var(--bg-panel);
   border: 1px solid var(--border-app);
   border-radius: 14px;
   padding: 20px;
@@ -432,7 +401,7 @@ body {
   flex-direction: column;
 }
 
-.panel-header-toolbar {
+.trends-top-row, .history-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -441,19 +410,19 @@ body {
   gap: 12px;
 }
 
-.panel-heading {
-  font-size: 1.15rem;
+.hw3-section-title {
+  font-size: 1.3rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: #ffffff;
 }
 
-.toolbar-actions {
+.trends-controls-right, .history-controls-left, .history-controls-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.hw-select {
+.hw3-select {
   padding: 8px 14px;
   border-radius: 8px;
   background: var(--bg-btn);
@@ -463,7 +432,7 @@ body {
   outline: none;
 }
 
-.hw-btn-group {
+.hw3-range-group {
   display: flex;
   gap: 4px;
   background: var(--bg-btn);
@@ -471,7 +440,7 @@ body {
   border-radius: 8px;
 }
 
-.hw-btn-range {
+.hw3-btn-range {
   padding: 6px 14px;
   border-radius: 6px;
   border: none;
@@ -482,16 +451,16 @@ body {
   cursor: pointer;
 }
 
-.hw-btn-range.active {
+.hw3-btn-range.active {
   background: var(--bg-btn-hover);
-  color: var(--text-main);
+  color: #ffffff;
 }
 
-.hw-btn {
-  padding: 8px 16px;
+.hw3-btn-action {
+  padding: 8px 18px;
   border-radius: 8px;
   border: none;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
@@ -499,18 +468,27 @@ body {
   gap: 8px;
 }
 
-.hw-btn-green { background: #00c853; color: #000; }
-.hw-btn-blue { background: #0066ff; color: #fff; }
-.hw-btn-dark { background: var(--bg-btn); color: var(--text-main); border: 1px solid var(--border-subtle); }
-.hw-btn-subtle { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 4px 12px; font-size: 0.75rem; border-radius: 6px; cursor: pointer; }
+.btn-green { background: #00c853; color: #ffffff; }
+.btn-blue { background: #2979ff; color: #ffffff; }
 
-.chart-wrapper {
+.hw3-btn-pill {
+  background: var(--bg-btn);
+  border: 1px solid var(--border-subtle);
+  color: #ffffff;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hw3-chart-area {
   flex: 1;
   position: relative;
   width: 100%;
 }
 
-.panel-footer-summary {
+.trends-bottom-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -519,39 +497,34 @@ body {
   margin-top: 14px;
 }
 
-.panel-footer-summary h3 {
-  font-size: 0.9rem;
+.trends-bottom-row h3 {
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: #ffffff;
 }
 
-.history-controls-left, .history-controls-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.history-table-container {
+.hw3-table-wrapper {
   flex: 1;
   overflow-y: auto;
 }
 
-.hw-table {
+.hw3-data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
-.hw-table th, .hw-table td {
+.hw3-data-table th, .hw3-data-table td {
   padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid var(--border-subtle);
 }
 
-.hw-table th {
-  color: var(--text-muted);
+.hw3-data-table th {
+  color: #6e7b91;
   font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   background: var(--bg-header);
   position: sticky;
@@ -559,95 +532,95 @@ body {
 }
 
 /* ==========================================================================
-   TAB 4: SYSTEM DIAGNOSTICS (HeatWatch 3 Screenshot 5 Layout)
+   SCREENSHOT 5: SYSTEM DIAGNOSTICS & RESOURCE MONITOR
    ========================================================================== */
-.diag-top-grid {
+.diag-top-cards-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 16px;
 }
 
-.diag-card {
-  background: var(--bg-card);
+.diag-metric-card {
+  background: var(--bg-panel);
   border: 1px solid var(--border-app);
-  border-radius: 12px;
-  padding: 18px 20px;
+  border-radius: 14px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.diag-card-title {
+.diag-metric-title {
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: #8a96a8;
   letter-spacing: 0.05em;
 }
 
-.diag-card-value {
+.diag-metric-val {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: var(--color-cyan);
 }
 
-.diag-panel {
+.diag-bottom-panel {
   flex: 1;
 }
 
-.diag-info-grid {
+.diag-details-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-top: 16px;
+  gap: 32px;
+  margin-top: 20px;
 }
 
-.diag-info-row {
+.diag-entry-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
-  font-size: 0.9rem;
+  margin-bottom: 16px;
+  font-size: 0.92rem;
 }
 
-.info-label {
-  color: var(--text-main);
+.diag-entry-key {
+  color: #ffffff;
   font-weight: 700;
 }
 
-.info-val {
-  color: var(--text-muted);
+.diag-entry-val {
+  color: #8a96a8;
   font-family: 'JetBrains Mono', monospace;
 }
 
-.text-cyan { color: var(--color-cyan); font-weight: 700; }
+.font-cyan { color: var(--color-cyan); font-weight: 700; }
 
-.pill-ppi-online {
-  background: rgba(0, 230, 118, 0.15);
-  color: var(--color-green);
+.pill-ppi-status {
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 10px;
-  margin-left: 8px;
+  padding: 4px 12px;
+  border-radius: 12px;
+
 }
+.pill-ppi-status.online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); }
+.pill-ppi-status.offline { background: rgba(255, 23, 68, 0.2); color: var(--color-critical); }
 
 /* --- MODALS --- */
-.modal-overlay {
+.hw3-modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
-.modal-overlay.active { display: flex; }
+.hw3-modal-overlay.active { display: flex; }
 
-.modal-card {
-  background: var(--bg-card);
+.hw3-modal-box {
+  background: var(--bg-panel);
   border: 1px solid var(--border-app);
   border-radius: 16px;
   width: 90%;
@@ -656,24 +629,24 @@ body {
 .modal-small { max-width: 400px; }
 .modal-large { max-width: 950px; }
 
-.modal-header {
+.hw3-modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
 }
-.modal-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-main); }
-.modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
+.hw3-modal-header h3 { font-size: 1rem; font-weight: 700; color: #ffffff; }
+.hw3-modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
 
-.modal-body { padding: 20px; }
-.hw-input {
+.hw3-modal-body { padding: 20px; }
+.hw3-input {
   width: 100%; padding: 10px 14px; border-radius: 8px;
   background: var(--bg-btn); border: 1px solid var(--border-subtle);
-  color: var(--text-main); font-size: 0.9rem; margin-top: 10px;
+  color: #ffffff; font-size: 0.9rem; margin-top: 10px;
 }
 
 .settings-scroll-table { max-height: 400px; overflow-y: auto; }
 
-.modal-footer-actions {
+.hw3-modal-footer {
   display: flex; justify-content: space-between; align-items: center;
   margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-subtle);
 }
@@ -683,7 +656,7 @@ body {
 .margin-top { margin-top: 14px; }
 .text-error { color: var(--color-critical); font-size: 0.8rem; margin-top: 6px; }
 
-.app-footer {
+.hw3-footer {
   display: flex; justify-content: space-between; padding: 6px 24px;
   font-size: 0.72rem; color: var(--text-subtle); border-top: 1px solid var(--border-app);
   background: var(--bg-header); height: 26px; align-items: center;

@@ -1,6 +1,6 @@
 /**
  * HeatWatch 4 — Elanadu Milk Edition
- * HeatWatch Version 3 Design Matching Client Application
+ * HeatWatch 3 Reference Matching Frontend Application
  * Author: Goose Industrial Solutions
  */
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // DOM Elements
   const splashScreen = document.getElementById('splash-screen');
-  const splashProgressBar = document.querySelector('.splash-progress-bar');
+  const splashProgressBar = document.getElementById('splash-progress-bar');
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
   const iconThemeDark = document.getElementById('icon-theme-dark');
   const iconThemeLight = document.getElementById('icon-theme-light');
@@ -31,18 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalAuth = document.getElementById('modal-auth');
   const modalSettings = document.getElementById('modal-settings');
 
-  // --- 1. SPLASH LOADING SCREEN (HeatWatch 3 style) ---
+  // --- 1. SPLASH LOADING SCREEN (HeatWatch 3 Screenshot 1) ---
   let progress = 0;
   const progressInterval = setInterval(() => {
-    progress += 20;
+    progress += 25;
     if (splashProgressBar) splashProgressBar.style.width = `${progress}%`;
     if (progress >= 100) {
       clearInterval(progressInterval);
       setTimeout(() => {
         if (splashScreen) splashScreen.classList.add('fade-out');
-      }, 400);
+      }, 350);
     }
-  }, 120);
+  }, 100);
 
   // --- 2. FULLSCREEN TOGGLE ---
   btnFullscreen.addEventListener('click', () => {
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ws = new WebSocket(wsUrl);
 
-    ws.onopen = () => console.log('[WebSocket] Connected');
+    ws.onopen = () => console.log('[WebSocket] Connected to HeatWatch server');
 
     ws.onmessage = (event) => {
       try {
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ws.onclose = () => setTimeout(initWebSocket, 3000);
   }
 
-  // --- 5. REAL-TIME 8-CHANNEL TELEMETRY GRID RENDERER (HeatWatch 3 Card Style) ---
+  // --- 5. REAL-TIME 8-CHANNEL TELEMETRY GRID RENDERER (Screenshot 2 Match) ---
   function renderTelemetry(data, isMuted) {
     if (!data) return;
 
@@ -141,31 +141,33 @@ document.addEventListener('DOMContentLoaded', () => {
         pillText = '• WARNING';
       }
 
+      const tempStr = (ch.value !== undefined && ch.value !== null) ? ch.value.toFixed(1) : '--';
       const minVal = (ch.lolo !== undefined) ? ch.lolo - 5 : 0;
       const maxVal = (ch.hihi !== undefined) ? ch.hihi + 5 : 100;
       const percent = Math.min(100, Math.max(0, ((ch.value - minVal) / (maxVal - minVal)) * 100));
 
       const cardHtml = `
-        <div class="hw3-card">
-          <div class="hw3-card-top">
-            <span class="hw3-ch-badge">${ch.id}</span>
-            <span class="hw3-status-pill ${pillClass}">${pillText}</span>
+        <div class="hw3-card-v3">
+          <div class="hw3-card-header">
+            <span class="hw3-badge-ch">${ch.id}</span>
+            <span class="hw3-pill-status ${pillClass}">${pillText}</span>
           </div>
 
-          <h3 class="hw3-ch-title">${ch.label}</h3>
+          <div class="hw3-process-name">${ch.label}</div>
 
-          <div class="hw3-temp-box">
-            <span class="hw3-temp-num">${ch.value.toFixed(1)}</span>
+          <div class="hw3-temp-display">
+            <span class="hw3-temp-num">${tempStr}</span>
             <span class="hw3-temp-unit">${ch.unit || '°C'}</span>
           </div>
 
-          <div class="hw3-bar-divider">
-            <div class="hw3-bar-fill" style="width: ${percent}%;"></div>
+          <div class="hw3-line-divider">
+            <div style="width:${percent}%; height:100%; background:var(--color-cyan);"></div>
           </div>
 
-          <div class="hw3-card-bottom">
+          <div class="hw3-card-footer">
             <span>Lo: ${ch.lo}°C | Hi: ${ch.hi}°C</span>
             <span>HiHi: ${ch.hihi}°C</span>
+            <span class="hw3-just-now">Just now</span>
           </div>
         </div>
       `;
@@ -180,11 +182,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- SUBNAV TABS NAVIGATION ---
-  document.querySelectorAll('.subnav-tab').forEach((tabBtn) => {
+  // --- SUBNAV TABS SWITCHING ---
+  document.querySelectorAll('.hw3-tab-btn').forEach((tabBtn) => {
     tabBtn.addEventListener('click', () => {
-      document.querySelectorAll('.subnav-tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.hw3-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.hw3-pane').forEach(p => p.classList.remove('active'));
 
       tabBtn.classList.add('active');
       const targetTab = tabBtn.getAttribute('data-tab');
@@ -200,9 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- HISTORICAL LOGS QUERY & EXPORTS ---
+  // --- SCREENSHOT 4: HISTORICAL LOGS QUERY & EXPORTS ---
   async function fetchHistoricalLogs() {
-    const hours = document.getElementById('history-range-select').value;
+    const hours = document.getElementById('history-hours-select').value;
     const rtdFilter = document.getElementById('history-rtd-select').value;
 
     try {
@@ -220,8 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.getElementById('history-table-body');
     tbody.innerHTML = '';
 
-    if (!data.length) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:#64748b;">No telemetry log records found for selected time range.</td></tr>`;
+    if (!data || !data.length) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:50px; color:#525c6e;">No telemetry log records found for selected time range.</td></tr>`;
       return;
     }
 
@@ -235,9 +237,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const trHtml = `
           <tr>
             <td><strong>${timeStr}</strong></td>
-            <td><span class="hw3-ch-badge">${s.id}</span> ${s.label}</td>
+            <td><span class="hw3-badge-ch">${s.id}</span> ${s.label}</td>
             <td><strong>${val !== undefined ? val.toFixed(1) : '--'} °C</strong></td>
-            <td><span class="hw3-status-pill online">• ONLINE</span></td>
+            <td><span class="hw3-pill-status online">• ONLINE</span></td>
           </tr>
         `;
         tbody.insertAdjacentHTML('beforeend', trHtml);
@@ -247,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-query-logs').addEventListener('click', fetchHistoricalLogs);
   document.getElementById('history-rtd-select').addEventListener('change', fetchHistoricalLogs);
-  document.getElementById('history-range-select').addEventListener('change', fetchHistoricalLogs);
+  document.getElementById('history-hours-select').addEventListener('change', fetchHistoricalLogs);
 
   // CSV Export
   document.getElementById('btn-export-csv-history').addEventListener('click', () => {
@@ -275,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.removeChild(link);
   });
 
-  // Excel / CSV fallback
   document.getElementById('btn-export-excel-history').addEventListener('click', () => {
     document.getElementById('btn-export-csv-history').click();
   });
@@ -319,8 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.save(`HeatWatch_Audit_Report_${rtdFilter}_${Date.now()}.pdf`);
   });
 
-  // --- MULTI-CHANNEL REALTIME TRENDS CHART ---
-  const CHANNEL_COLORS = ['#00e5ff', '#0066ff', '#00e676', '#ffc400', '#ff1744', '#ab47bc', '#ff7043', '#78909c'];
+  // --- SCREENSHOT 3: MULTI-CHANNEL REALTIME TRENDS CHART ---
+  const CHANNEL_COLORS = ['#2979ff', '#00e5ff', '#00c853', '#ffc400', '#ff1744', '#ab47bc', '#ff7043', '#78909c'];
 
   function initChart() {
     const ctx = document.getElementById('trendChart').getContext('2d');
@@ -343,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initChart();
 
   async function fetchHistoricalTrends(hours) {
-    const rtdFilter = document.getElementById('trends-rtd-filter').value;
+    const rtdFilter = document.getElementById('trends-rtd-select').value;
     try {
       const resp = await fetch(`/api/history?hours=${hours}`);
       const result = await resp.json();
@@ -369,11 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  document.getElementById('trends-rtd-filter').addEventListener('change', () => fetchHistoricalTrends(currentRangeHours));
+  document.getElementById('trends-rtd-select').addEventListener('change', () => fetchHistoricalTrends(currentRangeHours));
 
-  document.querySelectorAll('.hw-btn-range').forEach(btn => {
+  document.querySelectorAll('.hw3-btn-range').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.hw-btn-range').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.hw3-btn-range').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentRangeHours = parseInt(btn.getAttribute('data-hours'), 10);
       fetchHistoricalTrends(currentRangeHours);
@@ -404,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     doc.setFontSize(16);
     doc.setTextColor(0, 229, 255);
-    doc.text('HeatWatch 4 — Elanadu Milk Multi-Channel Trends Graph', 14, 18);
+    doc.text('HeatWatch 4 — Multi-Channel Trends Graph Report', 14, 18);
 
     const canvas = document.getElementById('trendChart');
     const imgData = canvas.toDataURL('image/png');
@@ -413,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.save(`HeatWatch_Trend_Graph_${Date.now()}.pdf`);
   });
 
-  // --- SYSTEM DIAGNOSTICS QUERY (HeatWatch 3 Screenshot 5 Layout) ---
+  // --- SCREENSHOT 5: SYSTEM DIAGNOSTICS & RESOURCE MONITOR ---
   async function fetchDiagnostics() {
     try {
       const resp = await fetch('/api/system');
@@ -482,13 +483,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const trHtml = `
         <tr>
           <td><strong>${s.id}</strong></td>
-          <td><input type="text" data-id="${s.id}" data-field="label" value="${s.label}" class="hw-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lolo" value="${s.lolo}" class="hw-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lo" value="${s.lo}" class="hw-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="target" value="${s.target}" class="hw-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hi" value="${s.hi}" class="hw-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hihi" value="${s.hihi}" class="hw-input"></td>
-          <td><input type="number" step="0.1" data-id="${s.id}" data-field="offset" value="${s.offset || 0}" class="hw-input"></td>
+          <td><input type="text" data-id="${s.id}" data-field="label" value="${s.label}" class="hw3-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lolo" value="${s.lolo}" class="hw3-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lo" value="${s.lo}" class="hw3-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="target" value="${s.target}" class="hw3-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hi" value="${s.hi}" class="hw3-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hihi" value="${s.hihi}" class="hw3-input"></td>
+          <td><input type="number" step="0.1" data-id="${s.id}" data-field="offset" value="${s.offset || 0}" class="hw3-input"></td>
         </tr>
       `;
       tbody.insertAdjacentHTML('beforeend', trHtml);
@@ -524,9 +525,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Close Modals
-  document.querySelectorAll('.modal-close').forEach(btn => {
+  document.querySelectorAll('.hw3-modal-close').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      document.querySelectorAll('.hw3-modal-overlay').forEach(m => m.classList.remove('active'));
     });
   });
 
