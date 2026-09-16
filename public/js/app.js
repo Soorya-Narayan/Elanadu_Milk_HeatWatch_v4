@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalAuth = document.getElementById('modal-auth');
   const modalSettings = document.getElementById('modal-settings');
 
-  // --- 1. SPLASH LOADING SCREEN (HeatWatch 3 Screenshot 1) ---
+  // --- 1. SPLASH LOADING SCREEN ---
   let progress = 0;
   const progressInterval = setInterval(() => {
     progress += 25;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(progressInterval);
       setTimeout(() => {
         if (splashScreen) splashScreen.classList.add('fade-out');
-      }, 350);
+      }, 300);
     }
   }, 100);
 
@@ -96,6 +96,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- IMMEDIATE INITIAL REST FETCH ---
+  async function fetchImmediateLiveTelemetry() {
+    try {
+      const resp = await fetch('/api/telemetry/live');
+      const json = await resp.json();
+      if (json && json.data) {
+        latestTelemetryData = json.data;
+        renderTelemetry(json.data, json.muted);
+      }
+    } catch (err) {
+      console.error('Error fetching immediate live telemetry:', err);
+    }
+  }
+
   // --- WEBSOCKET TELEMETRY ENGINE ---
   function initWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -120,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ws.onclose = () => setTimeout(initWebSocket, 3000);
   }
 
-  // --- 5. REAL-TIME 8-CHANNEL TELEMETRY GRID RENDERER (Screenshot 2 Match) ---
+  // --- REAL-TIME 8-CHANNEL TELEMETRY GRID RENDERER ---
   function renderTelemetry(data, isMuted) {
     if (!data) return;
 
@@ -202,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- SCREENSHOT 4: HISTORICAL LOGS QUERY & EXPORTS ---
+  // --- HISTORICAL LOGS QUERY & EXPORTS ---
   async function fetchHistoricalLogs() {
     const hours = document.getElementById('history-hours-select').value;
     const rtdFilter = document.getElementById('history-rtd-select').value;
@@ -320,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.save(`HeatWatch_Audit_Report_${rtdFilter}_${Date.now()}.pdf`);
   });
 
-  // --- SCREENSHOT 3: MULTI-CHANNEL REALTIME TRENDS CHART ---
+  // --- MULTI-CHANNEL REALTIME TRENDS CHART ---
   const CHANNEL_COLORS = ['#2979ff', '#00e5ff', '#00c853', '#ffc400', '#ff1744', '#ab47bc', '#ff7043', '#78909c'];
 
   function initChart() {
@@ -414,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.save(`HeatWatch_Trend_Graph_${Date.now()}.pdf`);
   });
 
-  // --- SCREENSHOT 5: SYSTEM DIAGNOSTICS & RESOURCE MONITOR ---
+  // --- SYSTEM DIAGNOSTICS QUERY ---
   async function fetchDiagnostics() {
     try {
       const resp = await fetch('/api/system');
@@ -531,6 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Init WS
+  // Execute Immediate REST fetch & Start WebSocket
+  fetchImmediateLiveTelemetry();
   initWebSocket();
 });
