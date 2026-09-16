@@ -10,6 +10,7 @@
 body.theme-dark {
   --bg-app: #040a17;
   --bg-header: #07132a;
+  --bg-subnav: #091938;
   --bg-panel: #0a1b3d;
   --bg-card: #0c2047;
   --bg-card-hover: #102756;
@@ -38,6 +39,7 @@ body.theme-dark {
 body.theme-light {
   --bg-app: #edf3fa;
   --bg-header: #ffffff;
+  --bg-subnav: #e2ebf6;
   --bg-panel: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #f5f8fd;
@@ -85,7 +87,7 @@ body {
 }
 
 /* ==========================================================================
-   REQUIREMENT 4: SPLASH LOADING SCREEN WITH LIGHT & DARK MODE SUPPORT
+   SPLASH LOADING SCREEN
    ========================================================================== */
 .splash-overlay-elanadu {
   position: fixed;
@@ -98,7 +100,6 @@ body {
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-/* Light Mode Splash Screen */
 body.theme-light .splash-overlay-elanadu {
   background: radial-gradient(circle at center, #ffffff 0%, #e2ecf8 100%);
 }
@@ -116,9 +117,7 @@ body.theme-light .splash-overlay-elanadu {
   max-width: 440px;
 }
 
-.splash-logo-container {
-  margin-bottom: 30px;
-}
+.splash-logo-container { margin-bottom: 30px; }
 
 .splash-elanadu-main-logo {
   height: 110px;
@@ -153,12 +152,10 @@ body.theme-light .splash-overlay-elanadu {
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
-.splash-footer-tagline strong {
-  color: var(--text-main);
-}
+.splash-footer-tagline strong { color: var(--text-main); }
 
 /* ==========================================================================
-   REQUIREMENT 2 & 3: NAVBAR HEADER (Elanadu Logo + Goose Logo)
+   NAVBAR HEADER & DROPDOWN MENU
    ========================================================================== */
 .app-header-elanadu {
   display: flex;
@@ -170,30 +167,10 @@ body.theme-light .splash-overlay-elanadu {
   height: 62px;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-goose-icon {
-  height: 34px;
-  width: auto;
-  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
-}
-
-.header-elanadu-logo {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-  border-left: 1px solid var(--border-subtle);
-  padding-left: 12px;
-}
-
-.header-center {
-  flex: 1;
-  text-align: center;
-}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-goose-icon { height: 34px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4)); }
+.header-elanadu-logo { height: 40px; width: auto; object-fit: contain; border-left: 1px solid var(--border-subtle); padding-left: 12px; }
+.header-center { flex: 1; text-align: center; }
 
 .header-system-title {
   font-size: 1.6rem;
@@ -204,16 +181,9 @@ body.theme-light .splash-overlay-elanadu {
   -webkit-text-fill-color: transparent;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.header-right { display: flex; align-items: center; gap: 10px; }
 
-/* DROPDOWN MENU STYLING */
-.dropdown-wrapper {
-  position: relative;
-}
+.dropdown-wrapper { position: relative; }
 
 .btn-elanadu {
   display: inline-flex;
@@ -242,9 +212,7 @@ body.theme-light .splash-overlay-elanadu {
   color: #ffffff;
   border-color: var(--elanadu-blue);
 }
-.btn-nav-dropdown:hover {
-  background: #003380;
-}
+.btn-nav-dropdown:hover { background: #003380; }
 
 .caret-icon { font-size: 0.75rem; margin-left: 4px; }
 
@@ -252,7 +220,7 @@ body.theme-light .splash-overlay-elanadu {
   position: absolute;
   top: 48px;
   right: 0;
-  width: 220px;
+  width: 230px;
   background: var(--bg-header);
   border: 1px solid var(--border-app);
   border-radius: 12px;
@@ -263,15 +231,14 @@ body.theme-light .splash-overlay-elanadu {
   gap: 4px;
   z-index: 500;
 }
-.dropdown-menu-list.show {
-  display: flex;
-  animation: dropFade 0.2s ease-out;
-}
+.dropdown-menu-list.show { display: flex; animation: dropFade 0.2s ease-out; }
 
 @keyframes dropFade {
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.dropdown-divider { height: 1px; background: var(--border-subtle); margin: 4px 0; }
 
 .dropdown-item {
   display: flex;
@@ -288,14 +255,10 @@ body.theme-light .splash-overlay-elanadu {
   text-align: left;
   transition: all 0.15s ease;
 }
-.dropdown-item.active {
-  background: var(--elanadu-blue);
-  color: #ffffff;
-}
-.dropdown-item:hover:not(.active) {
-  background: var(--bg-btn-hover);
-  color: var(--text-main);
-}
+.dropdown-item.active { background: var(--elanadu-blue); color: #ffffff; }
+.dropdown-item:hover:not(.active) { background: var(--bg-btn-hover); color: var(--text-main); }
+
+.text-yellow { color: var(--elanadu-yellow) !important; }
 
 .btn-icon-square {
   width: 40px;
@@ -305,31 +268,12 @@ body.theme-light .splash-overlay-elanadu {
   font-size: 1.05rem;
 }
 
-.btn-primary-blue {
-  background: var(--elanadu-blue);
-  color: #ffffff;
-  border-color: var(--elanadu-blue);
-}
+.btn-primary-blue { background: var(--elanadu-blue); color: #ffffff; border-color: var(--elanadu-blue); }
+.btn-secondary-slate { background: var(--bg-btn); color: var(--text-main); border-color: var(--border-subtle); }
+.btn-action-csv { background: rgba(0, 230, 118, 0.15); color: var(--color-green); border-color: var(--color-green); }
+.btn-action-pdf { background: rgba(255, 184, 0, 0.15); color: var(--elanadu-yellow); border-color: var(--elanadu-yellow); }
 
-.btn-secondary-slate {
-  background: var(--bg-btn);
-  color: var(--text-main);
-  border-color: var(--border-subtle);
-}
-
-.btn-action-csv {
-  background: rgba(0, 230, 118, 0.15);
-  color: var(--color-green);
-  border-color: var(--color-green);
-}
-
-.btn-action-pdf {
-  background: rgba(255, 184, 0, 0.15);
-  color: var(--elanadu-yellow);
-  border-color: var(--elanadu-yellow);
-}
-
-/* --- MAIN VIEWPORT (Clean Full-Height Viewport with Sub-bar and Footer Removed) --- */
+/* MAIN VIEWPORT */
 .main-viewport-content {
   flex: 1;
   padding: 16px 24px;
@@ -337,18 +281,10 @@ body.theme-light .splash-overlay-elanadu {
   overflow: hidden;
 }
 
-.view-pane {
-  display: none;
-  height: 100%;
-}
-.view-pane.active {
-  display: flex;
-  flex-direction: column;
-}
+.view-pane { display: none; height: 100%; }
+.view-pane.active { display: flex; flex-direction: column; }
 
-/* ==========================================================================
-   COMPACT 8-CHANNEL TELEMETRY GRID (2 ROWS x 4 COLUMNS NO SCROLL)
-   ========================================================================== */
+/* COMPACT 8-CHANNEL TELEMETRY GRID */
 .elanadu-grid-2x4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -375,11 +311,7 @@ body.theme-light .splash-overlay-elanadu {
   border-color: var(--elanadu-blue);
 }
 
-.card-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+.card-top-row { display: flex; align-items: center; justify-content: space-between; }
 
 .ch-badge-elanadu {
   font-family: 'JetBrains Mono', monospace;
@@ -413,12 +345,7 @@ body.theme-light .splash-overlay-elanadu {
   overflow: hidden;
 }
 
-.ch-temp-row {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin: 8px 0;
-}
+.ch-temp-row { display: flex; align-items: baseline; gap: 6px; margin: 8px 0; }
 
 .ch-temp-big {
   font-family: 'JetBrains Mono', monospace;
@@ -428,38 +355,12 @@ body.theme-light .splash-overlay-elanadu {
   line-height: 1;
 }
 
-.ch-temp-unit {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
+.ch-temp-unit { font-size: 1.2rem; font-weight: 600; color: var(--text-muted); }
+.ch-divider-line { height: 3px; background: var(--border-subtle); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
+.ch-divider-fill { height: 100%; background: linear-gradient(90deg, var(--elanadu-blue), var(--elanadu-yellow)); transition: width 0.3s ease; }
+.ch-bottom-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 
-.ch-divider-line {
-  height: 3px;
-  background: var(--border-subtle);
-  border-radius: 2px;
-  margin-bottom: 8px;
-  overflow: hidden;
-}
-
-.ch-divider-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--elanadu-blue), var(--elanadu-yellow));
-  transition: width 0.3s ease;
-}
-
-.ch-bottom-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* ==========================================================================
-   TELEMETRY LOGS & TRENDS PANELS
-   ========================================================================== */
+/* TELEMETRY LOGS & TRENDS PANELS */
 .elanadu-panel-box {
   background: var(--bg-panel);
   border: 1px solid var(--border-app);
@@ -470,26 +371,9 @@ body.theme-light .splash-overlay-elanadu {
   flex-direction: column;
 }
 
-.panel-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.panel-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.toolbar-actions-group, .toolbar-left-inputs, .toolbar-right-exports {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.panel-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.panel-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+.toolbar-actions-group, .toolbar-left-inputs, .toolbar-right-exports { display: flex; align-items: center; gap: 10px; }
 
 .elanadu-select {
   padding: 8px 14px;
@@ -501,117 +385,32 @@ body.theme-light .splash-overlay-elanadu {
   outline: none;
 }
 
-.range-btn-group {
-  display: flex;
-  gap: 2px;
-  background: var(--bg-btn);
-  padding: 3px;
-  border-radius: 8px;
-}
+.range-btn-group { display: flex; gap: 2px; background: var(--bg-btn); padding: 3px; border-radius: 8px; }
+.range-btn { padding: 6px 12px; border-radius: 6px; border: none; background: transparent; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+.range-btn.active { background: var(--elanadu-blue); color: #ffffff; }
 
-.range-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.range-btn.active {
-  background: var(--elanadu-blue);
-  color: #ffffff;
-}
+.chart-container { flex: 1; position: relative; width: 100%; }
+.standard-table-wrapper { flex: 1; overflow-y: auto; }
 
-.chart-container {
-  flex: 1;
-  position: relative;
-  width: 100%;
-}
-
-.standard-table-wrapper {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.elanadu-standard-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-}
-
-.elanadu-standard-table th, .elanadu-standard-table td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.elanadu-standard-table th {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  background: var(--bg-header);
-  position: sticky;
-  top: 0;
-}
+.elanadu-standard-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.elanadu-standard-table th, .elanadu-standard-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-subtle); }
+.elanadu-standard-table th { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: var(--bg-header); position: sticky; top: 0; }
 
 /* SYSTEM DIAGNOSTICS */
-.diag-metrics-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.diag-card-box {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-app);
-  border-radius: 14px;
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.diag-card-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.diag-card-number {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--elanadu-yellow);
-}
+.diag-metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+.diag-card-box { background: var(--bg-panel); border: 1px solid var(--border-app); border-radius: 14px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+.diag-card-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+.diag-card-number { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 800; color: var(--elanadu-yellow); }
 
 .diag-details-panel { flex: 1; }
-
-.diag-grid-rows {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  margin-top: 16px;
-}
-
-.diag-row-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  font-size: 0.9rem;
-}
-
+.diag-grid-rows { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-top: 16px; }
+.diag-row-item { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 0.9rem; }
 .diag-key { font-weight: 700; color: var(--text-main); }
 .diag-val { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 .font-yellow { color: var(--elanadu-yellow); font-weight: 700; }
 .pill-online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
 
-/* MODALS */
+/* MODALS & EXPANDED SETTINGS PANEL */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -633,23 +432,64 @@ body.theme-light .splash-overlay-elanadu {
 }
 .modal-small { max-width: 400px; }
 .modal-large { max-width: 950px; }
+.modal-extra-large { max-width: 1050px; }
 
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-header);
 }
 .modal-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-main); }
 .modal-close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
+
+/* MULTI-TAB SETTINGS NAVIGATION */
+.settings-nav-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px;
+  background: var(--bg-subnav);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.set-tab {
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+.set-tab.active {
+  color: var(--elanadu-yellow);
+  border-bottom-color: var(--elanadu-yellow);
+  background: rgba(255, 184, 0, 0.08);
+}
+
+.settings-tab-body { padding: 20px; max-height: 520px; overflow-y: auto; }
+.settings-pane { display: none; }
+.settings-pane.active { display: block; }
+
+.settings-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field.full-width { grid-column: span 2; }
+.form-field label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
 
 .modal-body { padding: 20px; }
 .elanadu-input {
   width: 100%; padding: 10px 14px; border-radius: 8px;
   background: var(--bg-btn); border: 1px solid var(--border-subtle);
-  color: var(--text-main); font-size: 0.9rem; margin-top: 10px;
+  color: var(--text-main); font-size: 0.9rem;
 }
 
-.settings-table-wrapper { max-height: 400px; overflow-y: auto; }
+.settings-table-wrapper { max-height: 380px; overflow-y: auto; }
 
 .modal-footer-flex {
   display: flex; justify-content: space-between; align-items: center;

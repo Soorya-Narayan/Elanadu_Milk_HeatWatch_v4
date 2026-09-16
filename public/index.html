@@ -20,7 +20,7 @@
 </head>
 <body class="theme-dark">
 
-  <!-- REQUIREMENT 4: SPLASH LOADING SCREEN WITH LIGHT/DARK MODE SUPPORT -->
+  <!-- SPLASH LOADING SCREEN -->
   <div id="splash-screen" class="splash-overlay-elanadu">
     <div class="splash-box">
       <div class="splash-logo-container">
@@ -40,10 +40,9 @@
   <!-- MAIN APPLICATION SHELL -->
   <div id="app" class="app-shell">
     
-    <!-- REQUIREMENT 2 & 3: NAVBAR HEADER (Elanadu Logo + Goose Logo, NO "Elanadu Milk Products" text) -->
+    <!-- NAVBAR HEADER -->
     <header class="app-header-elanadu">
       <div class="header-left">
-        <!-- REQUIREMENT 3: Goose logo in navbar alongside Elanadu logo -->
         <img src="assets/goose_icon.png" alt="Goose" class="header-goose-icon" />
         <img src="assets/elanadu_logo.png" alt="Elanadu" class="header-elanadu-logo" />
       </div>
@@ -53,7 +52,7 @@
       </div>
 
       <div class="header-right">
-        <!-- VIEWS DROPDOWN MENU BUTTON -->
+        <!-- REQUIREMENT 2: VIEWS & SETTINGS DROPDOWN MENU -->
         <div class="dropdown-wrapper">
           <button id="btn-views-menu" class="btn-elanadu btn-nav-dropdown" title="Select View">
             <i class="fa-solid fa-bars-staggered"></i> <span id="current-view-label">Dashboard</span> <i class="fa-solid fa-chevron-down caret-icon"></i>
@@ -72,6 +71,11 @@
             <button class="dropdown-item" data-tab="tab-diagnostics">
               <i class="fa-solid fa-server"></i> System Diagnostics
             </button>
+            <div class="dropdown-divider"></div>
+            <!-- REQUIREMENT 2: SETTINGS IN DROPDOWN MENU -->
+            <button id="dropdown-btn-settings" class="dropdown-item text-yellow">
+              <i class="fa-solid fa-gear"></i> Plant Settings
+            </button>
           </div>
         </div>
 
@@ -85,15 +89,8 @@
           <i class="fa-solid fa-volume-high" id="icon-audio-on"></i>
           <i class="fa-solid fa-volume-xmark" id="icon-audio-off" style="display:none;"></i>
         </button>
-
-        <!-- SETTINGS BUTTON -->
-        <button id="btn-settings" class="btn-elanadu btn-icon-square" title="Secure Plant Settings">
-          <i class="fa-solid fa-gear"></i>
-        </button>
       </div>
     </header>
-
-    <!-- REQUIREMENT 1: REMOVED SUB-STATUS BAR ("Live Dashboard Grid", "SYSTEM NORMAL", clock display removed) -->
 
     <!-- MAIN VIEWPORT CONTENT -->
     <main class="main-viewport-content">
@@ -105,7 +102,7 @@
         </div>
       </section>
 
-      <!-- TAB 2: REALTIME TRENDS WITH CSV & PDF CHART EXPORTS -->
+      <!-- TAB 2: REALTIME TRENDS -->
       <section id="tab-trends" class="view-pane">
         <div class="elanadu-panel-box">
           <div class="panel-toolbar">
@@ -134,6 +131,8 @@
               <button id="btn-export-csv-trends" class="btn-elanadu btn-action-csv">
                 <i class="fa-solid fa-file-csv"></i> Export CSV
               </button>
+              
+              <!-- REQUIREMENT 1: OPTIMIZED DUAL-LOGO TRENDS PDF EXPORT -->
               <button id="btn-export-pdf-trends" class="btn-elanadu btn-action-pdf">
                 <i class="fa-solid fa-file-pdf"></i> Download PDF Report
               </button>
@@ -179,6 +178,8 @@
               <button id="btn-export-csv-history" class="btn-elanadu btn-secondary-slate">
                 <i class="fa-solid fa-file-csv"></i> CSV
               </button>
+              
+              <!-- REQUIREMENT 1: OPTIMIZED DUAL-LOGO LOGS PDF EXPORT -->
               <button id="btn-export-pdf-history" class="btn-elanadu btn-secondary-slate">
                 <i class="fa-solid fa-file-pdf"></i> PDF Audit
               </button>
@@ -260,12 +261,9 @@
       </section>
 
     </main>
-
-    <!-- REQUIREMENT 5: REMOVED FOOTER COMPLETELY -->
-
   </div>
 
-  <!-- AUTH & SETTINGS MODALS -->
+  <!-- AUTH MODAL -->
   <div id="modal-auth" class="modal-backdrop">
     <div class="modal-card-elanadu modal-small">
       <div class="modal-header">
@@ -274,44 +272,147 @@
       </div>
       <div class="modal-body">
         <p class="subtle-text">Enter plant administrator password to unlock settings:</p>
-        <input type="password" id="auth-password" class="elanadu-input" placeholder="Enter Password..." />
+        <input type="password" id="auth-password" class="elanadu-input" placeholder="Enter Password (admin)..." />
         <div id="auth-error-msg" class="error-msg-text" style="display:none;">Invalid password</div>
         <button id="btn-submit-auth" class="btn-elanadu btn-primary-blue w-full margin-t">Authenticate</button>
       </div>
     </div>
   </div>
 
+  <!-- REQUIREMENT 3: EXPANDED MULTI-FUNCTION SETTINGS CONTROL PANEL -->
   <div id="modal-settings" class="modal-backdrop">
-    <div class="modal-card-elanadu modal-large">
+    <div class="modal-card-elanadu modal-extra-large">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-sliders"></i> Plant Sensor Configuration & Alarm Limits</h3>
+        <h3><i class="fa-solid fa-sliders"></i> Plant Operational Settings & System Control</h3>
         <button class="modal-close-btn">&times;</button>
       </div>
-      <div class="modal-body">
-        <div class="settings-table-wrapper">
-          <table class="elanadu-standard-table">
-            <thead>
-              <tr>
-                <th>CH</th>
-                <th>Process Description</th>
-                <th>LoLo (°C)</th>
-                <th>Lo (°C)</th>
-                <th>Target (°C)</th>
-                <th>Hi (°C)</th>
-                <th>HiHi (°C)</th>
-                <th>Offset (°C)</th>
-              </tr>
-            </thead>
-            <tbody id="settings-sensors-table">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
+      
+      <!-- SETTINGS MODAL NAVIGATION TABS -->
+      <div class="settings-nav-tabs">
+        <button class="set-tab active" data-stab="stab-sensors"><i class="fa-solid fa-temperature-list"></i> RTD Sensors & Limits</button>
+        <button class="set-tab" data-stab="stab-hardware"><i class="fa-solid fa-microchip"></i> Hardware Module</button>
+        <button class="set-tab" data-stab="stab-relay"><i class="fa-solid fa-bell"></i> Industrial Siren & Relay</button>
+        <button class="set-tab" data-stab="stab-influx"><i class="fa-solid fa-database"></i> InfluxDB Storage</button>
+        <button class="set-tab" data-stab="stab-security"><i class="fa-solid fa-lock"></i> Admin Password</button>
+      </div>
+
+      <div class="modal-body settings-tab-body">
+        
+        <!-- SETTINGS TAB 1: SENSORS & THRESHOLDS -->
+        <div id="stab-sensors" class="settings-pane active">
+          <div class="settings-table-wrapper">
+            <table class="elanadu-standard-table">
+              <thead>
+                <tr>
+                  <th>CH</th>
+                  <th>Process Description</th>
+                  <th>LoLo (°C)</th>
+                  <th>Lo (°C)</th>
+                  <th>Target (°C)</th>
+                  <th>Hi (°C)</th>
+                  <th>HiHi (°C)</th>
+                  <th>Offset (°C)</th>
+                </tr>
+              </thead>
+              <tbody id="settings-sensors-table">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        <!-- SETTINGS TAB 2: HARDWARE MODULE (PPI AIME 8U) -->
+        <div id="stab-hardware" class="settings-pane">
+          <div class="settings-form-grid">
+            <div class="form-field">
+              <label>PPI AIME 8U Hardware IP Address:</label>
+              <input type="text" id="cfg-rtd-ip" class="elanadu-input" value="192.168.1.2" />
+            </div>
+            <div class="form-field">
+              <label>HTTP / Modbus Port:</label>
+              <input type="number" id="cfg-rtd-port" class="elanadu-input" value="80" />
+            </div>
+            <div class="form-field">
+              <label>Polling Frequency (ms):</label>
+              <input type="number" id="cfg-poll-interval" class="elanadu-input" value="2000" />
+            </div>
+            <div class="form-field">
+              <label>Communication Timeout (ms):</label>
+              <input type="number" id="cfg-timeout" class="elanadu-input" value="1500" />
+            </div>
+            <div class="form-field full-width">
+              <label>Hardware Simulation Mode:</label>
+              <select id="cfg-mock-mode" class="elanadu-select w-full">
+                <option value="true">Enable Organic Mock Telemetry (Development / Test)</option>
+                <option value="false">Strict Hardware Direct Connection (PPI AIME 8U Module)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB 3: INDUSTRIAL SIREN & RELAY ACTUATOR -->
+        <div id="stab-relay" class="settings-pane">
+          <div class="settings-form-grid">
+            <div class="form-field">
+              <label>Siren Mute Duration (Seconds):</label>
+              <input type="number" id="cfg-mute-duration" class="elanadu-input" value="300" />
+            </div>
+            <div class="form-field">
+              <label>GPIO Primary Siren Pin (BCM):</label>
+              <input type="number" id="cfg-gpio-hooter" class="elanadu-input" value="18" />
+            </div>
+            <div class="form-field">
+              <label>GPIO Warning Strobe Pin (BCM):</label>
+              <input type="number" id="cfg-gpio-warning" class="elanadu-input" value="23" />
+            </div>
+            <div class="form-field">
+              <label>GPIO Critical Strobe Pin (BCM):</label>
+              <input type="number" id="cfg-gpio-critical" class="elanadu-input" value="24" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB 4: INFLUXDB TIME-SERIES -->
+        <div id="stab-influx" class="settings-pane">
+          <div class="settings-form-grid">
+            <div class="form-field">
+              <label>InfluxDB Server URL:</label>
+              <input type="text" id="cfg-influx-url" class="elanadu-input" value="http://localhost:8086" />
+            </div>
+            <div class="form-field">
+              <label>Organization Name:</label>
+              <input type="text" id="cfg-influx-org" class="elanadu-input" value="elanadu_heatwatch" />
+            </div>
+            <div class="form-field">
+              <label>Telemetry Bucket Name:</label>
+              <input type="text" id="cfg-influx-bucket" class="elanadu-input" value="temperature_telemetry" />
+            </div>
+            <div class="form-field">
+              <label>Authentication Token:</label>
+              <input type="password" id="cfg-influx-token" class="elanadu-input" value="elanadu_heatwatch_secret_token_2026" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB 5: ADMIN SECURITY -->
+        <div id="stab-security" class="settings-pane">
+          <div class="settings-form-grid">
+            <div class="form-field">
+              <label>Administrator Username:</label>
+              <input type="text" id="cfg-user-name" class="elanadu-input" value="admin" />
+            </div>
+            <div class="form-field">
+              <label>Change Administrator Password:</label>
+              <input type="password" id="cfg-user-pass" class="elanadu-input" value="admin" placeholder="New Password..." />
+            </div>
+          </div>
+        </div>
+
         <div class="modal-footer-flex">
           <button id="btn-reset-factory" class="btn-elanadu btn-secondary-slate">Reset Defaults</button>
           <div class="gap-flex">
             <button class="btn-elanadu btn-secondary-slate modal-close-btn">Cancel</button>
-            <button id="btn-save-settings" class="btn-elanadu btn-primary-blue">Save Configuration</button>
+            <button id="btn-save-settings" class="btn-elanadu btn-primary-blue">Save All Configuration</button>
           </div>
         </div>
       </div>

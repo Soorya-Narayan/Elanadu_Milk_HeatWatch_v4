@@ -1,6 +1,6 @@
 /**
  * HeatWatch 4 — Elanadu Milk Edition
- * Client Application & Dual-Logo PDF Exporter Engine
+ * Client Application, Dropdown Navigation & Base64 PDF Exporter
  * Author: Goose Industrial Solutions
  */
 
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnViewsMenu = document.getElementById('btn-views-menu');
   const viewsDropdownMenu = document.getElementById('views-dropdown-menu');
   const currentViewLabel = document.getElementById('current-view-label');
+  const dropdownBtnSettings = document.getElementById('dropdown-btn-settings');
   
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
   const iconThemeSun = document.getElementById('icon-theme-sun');
@@ -72,11 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 1. RENDER INSTANT TELEMETRY GRID ---
+  // Render Instant Initial Telemetry Grid
   latestTelemetryData = fallbackTelemetry;
   renderTelemetry(fallbackTelemetry, false);
 
-  // --- 2. SPLASH LOADING SCREEN ---
+  // Splash Loading Progress
   let progress = 0;
   const progressInterval = setInterval(() => {
     progress += 25;
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 80);
 
-  // --- 3. VIEWS DROPDOWN MENU HANDLER ---
+  // Requirement 2: Views Dropdown Menu Handler & Dropdown Settings Button
   if (btnViewsMenu) {
     btnViewsMenu.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (viewsDropdownMenu) viewsDropdownMenu.classList.remove('show');
   });
 
-  document.querySelectorAll('.dropdown-item').forEach((item) => {
+  document.querySelectorAll('.dropdown-item:not(#dropdown-btn-settings)').forEach((item) => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
       document.querySelectorAll('.view-pane').forEach(p => p.classList.remove('active'));
@@ -125,7 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- 4. LIGHT & DARK THEME SWITCHER ---
+  // Requirement 2: Settings Trigger from Dropdown Menu
+  if (dropdownBtnSettings) {
+    dropdownBtnSettings.addEventListener('click', () => {
+      if (viewsDropdownMenu) viewsDropdownMenu.classList.remove('show');
+      if (isAuthenticated) {
+        openSettingsModal();
+      } else {
+        if (modalAuth) modalAuth.classList.add('active');
+      }
+    });
+  }
+
+  // Light/Dark Theme Switcher
   const savedTheme = localStorage.getItem('heatwatch_theme') || 'theme-dark';
   applyTheme(savedTheme);
 
@@ -149,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- AUDIO MUTE TOGGLE ---
+  // Audio Mute Toggle
   if (btnMuteAlarm) {
     btnMuteAlarm.addEventListener('click', async () => {
       isAudioMuted = !isAudioMuted;
@@ -172,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- REAL-TIME 8-CHANNEL TELEMETRY GRID RENDERER ---
+  // Render Telemetry Grid Cards
   function renderTelemetry(data, isMuted) {
     if (!data || !elSensorGrid) return;
 
@@ -233,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- IMMEDIATE LIVE REST FETCH ---
   async function fetchImmediateLiveTelemetry() {
     try {
       const resp = await fetch('/api/telemetry/live');
@@ -242,21 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
         latestTelemetryData = json.data;
         renderTelemetry(json.data, json.muted);
       }
-    } catch (err) {
-      console.error('Error fetching live telemetry:', err);
-    }
+    } catch (err) {}
   }
 
-  // --- WEBSOCKET ENGINE ---
   function initWebSocket() {
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}`;
-
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => console.log('[WebSocket] Connected');
-
       ws.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data);
@@ -264,16 +271,13 @@ document.addEventListener('DOMContentLoaded', () => {
             latestTelemetryData = payload.data;
             renderTelemetry(payload.data, payload.muted);
           }
-        } catch (err) {
-          console.error('Error parsing WS telemetry:', err);
-        }
+        } catch (err) {}
       };
-
       ws.onclose = () => setTimeout(initWebSocket, 3000);
     } catch (e) {}
   }
 
-  // --- HISTORICAL LOGS QUERY & RENDERER ---
+  // Telemetry Logs Query
   async function fetchHistoricalLogs() {
     const hoursSelect = document.getElementById('history-hours-select');
     const rtdSelect = document.getElementById('history-rtd-select');
@@ -284,11 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const resp = await fetch(`/api/history?hours=${hours}`);
       const result = await resp.json();
       rawHistoryData = result.data || [];
-
       renderHistoryTable(result.sensors, rawHistoryData, rtdFilter);
-    } catch (err) {
-      console.error('Error querying history logs:', err);
-    }
+    } catch (err) {}
   }
 
   function renderHistoryTable(sensors, data, rtdFilter) {
@@ -303,7 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     data.forEach((row) => {
       const timeStr = new Date(row.timestamp).toLocaleString();
-
       sensors.forEach((s) => {
         if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
 
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnQueryLogs = document.getElementById('btn-query-logs');
   if (btnQueryLogs) btnQueryLogs.addEventListener('click', fetchHistoricalLogs);
 
-  // CSV Export for Logs
+  // CSV Export
   const btnExportCsvHistory = document.getElementById('btn-export-csv-history');
   if (btnExportCsvHistory) {
     btnExportCsvHistory.addEventListener('click', () => {
@@ -335,11 +335,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!rawHistoryData.length) return alert('No historical data available to export.');
 
       let csvContent = 'data:text/csv;charset=utf-8,Timestamp,RTD_Channel,Process_Description,Temperature_C,Target_C,Status\n';
-
       rawHistoryData.forEach((row) => {
         const timeStr = new Date(row.timestamp).toISOString();
         const sensors = latestTelemetryData ? latestTelemetryData.channels : [];
-        
         sensors.forEach((s) => {
           if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
           const val = row[s.id];
@@ -356,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // REQUIREMENT 2: DUAL-LOGO PDF EXPORT FOR TELEMETRY LOGS (ELANADU LOGO + GOOSE BANNER)
+  // REQUIREMENT 1: OPTIMIZED NO-OVERLAP DUAL-LOGO PDF EXPORT FOR TELEMETRY LOGS
   const btnExportPdfHistory = document.getElementById('btn-export-pdf-history');
   if (btnExportPdfHistory) {
     btnExportPdfHistory.addEventListener('click', async () => {
@@ -371,23 +369,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const elanaduImg = await loadImageAsBase64('assets/elanadu_logo.png');
       const gooseImg = await loadImageAsBase64('assets/goose_banner.png');
 
-      if (elanaduImg) {
-        doc.addImage(elanaduImg, 'PNG', 14, 10, 32, 20);
-      }
-      if (gooseImg) {
-        doc.addImage(gooseImg, 'PNG', 142, 12, 54, 16);
-      }
+      // Precise Portrait Positioning (No Overlap)
+      if (elanaduImg) doc.addImage(elanaduImg, 'PNG', 12, 6, 28, 18);
+      if (gooseImg) doc.addImage(gooseImg, 'PNG', 152, 8, 44, 14);
 
-      doc.setFontSize(15);
+      doc.setFontSize(14);
       doc.setTextColor(0, 71, 171);
-      doc.text('Elanadu Milk Products — Telemetry Audit Report', 50, 20);
+      doc.text('Elanadu Milk Products — Telemetry Audit Log', 45, 18);
 
-      doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`HeatWatch 4 Telemetry Console | Filter: ${rtdFilter} | Date: ${new Date().toLocaleString()}`, 50, 27);
+      doc.setFontSize(8.5);
+      doc.setTextColor(110);
+      doc.text(`HeatWatch 4 Telemetry Console | Filter: ${rtdFilter} | Date: ${new Date().toLocaleString()}`, 45, 24);
 
       doc.setDrawColor(200);
-      doc.line(14, 34, 196, 34);
+      doc.line(12, 28, 198, 28);
 
       const tableRows = [];
       const sensors = latestTelemetryData ? latestTelemetryData.channels : [];
@@ -402,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       doc.autoTable({
-        startY: 38,
+        startY: 32,
         head: [['Timestamp', 'RTD', 'Process Description', 'Temperature', 'Target', 'Status']],
         body: tableRows,
         headStyles: { fillColor: [0, 71, 171] },
@@ -413,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- REALTIME TRENDS CHART ---
+  // Realtime Trends Chart
   const CHANNEL_COLORS = ['#0066cc', '#ffb800', '#00e676', '#ff1744', '#ab47bc', '#26c6da', '#ff7043', '#78909c'];
 
   function initChart() {
@@ -446,7 +441,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await resp.json();
 
       const labels = result.data.map(row => new Date(row.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-
       const datasets = result.sensors
         .filter(s => rtdFilter === 'ALL' || s.id === rtdFilter)
         .map((sensor, idx) => ({
@@ -463,9 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
         trendChart.data.datasets = datasets;
         trendChart.update();
       }
-    } catch (err) {
-      console.error('Error fetching trends:', err);
-    }
+    } catch (err) {}
   }
 
   const trendsRtdSelect = document.getElementById('trends-rtd-select');
@@ -486,12 +478,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnExportCsvTrends.addEventListener('click', () => {
       if (!trendChart) return;
       let csvContent = 'data:text/csv;charset=utf-8,Timestamp,' + trendChart.data.datasets.map(d => d.label).join(',') + '\n';
-
       trendChart.data.labels.forEach((label, i) => {
         const rowVals = trendChart.data.datasets.map(d => d.data[i]);
         csvContent += `"${label}",${rowVals.join(',')}\n`;
       });
-
       const link = document.createElement('a');
       link.setAttribute('href', encodeURI(csvContent));
       link.setAttribute('download', `Elanadu_HeatWatch_Trends_${Date.now()}.csv`);
@@ -501,46 +491,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // REQUIREMENT 1: DUAL-LOGO PDF EXPORT FOR REALTIME TRENDS (ELANADU LOGO + GOOSE BANNER)
+  // REQUIREMENT 1: OPTIMIZED NO-OVERLAP DUAL-LOGO PDF EXPORT FOR TRENDS GRAPH
   const btnExportPdfTrends = document.getElementById('btn-export-pdf-trends');
   if (btnExportPdfTrends) {
     btnExportPdfTrends.addEventListener('click', async () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('landscape');
 
-      // Load Both Logos
       const elanaduImg = await loadImageAsBase64('assets/elanadu_logo.png');
       const gooseImg = await loadImageAsBase64('assets/goose_banner.png');
 
-      if (elanaduImg) {
-        doc.addImage(elanaduImg, 'PNG', 14, 8, 38, 24);
-      }
-      if (gooseImg) {
-        doc.addImage(gooseImg, 'PNG', 222, 10, 60, 18);
-      }
+      // Precise Landscape Positioning (No Overlap)
+      if (elanaduImg) doc.addImage(elanaduImg, 'PNG', 12, 6, 32, 22);
+      if (gooseImg) doc.addImage(gooseImg, 'PNG', 225, 8, 56, 18);
 
       doc.setFontSize(16);
       doc.setTextColor(0, 71, 171);
-      doc.text('Elanadu Milk Products — Realtime Thermal Trends Graph', 56, 20);
+      doc.text('Elanadu Milk Products — Realtime Thermal Trends Graph', 50, 20);
 
       doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`HeatWatch 4 Telemetry Console | Range: Last ${currentRangeHours} Hours | Date: ${new Date().toLocaleString()}`, 56, 27);
+      doc.setTextColor(110);
+      doc.text(`HeatWatch 4 Telemetry Console | Range: Last ${currentRangeHours} Hours | Date: ${new Date().toLocaleString()}`, 50, 26);
 
       doc.setDrawColor(200);
-      doc.line(14, 34, 282, 34);
+      doc.line(12, 32, 285, 32);
 
       const canvas = document.getElementById('trendChart');
       if (canvas) {
         const imgData = canvas.toDataURL('image/png');
-        doc.addImage(imgData, 'PNG', 14, 38, 268, 150);
+        doc.addImage(imgData, 'PNG', 12, 36, 272, 150);
       }
 
       doc.save(`Elanadu_HeatWatch_Trends_Graph_${currentRangeHours}h_${Date.now()}.pdf`);
     });
   }
 
-  // --- SYSTEM DIAGNOSTICS ---
+  // System Diagnostics
   async function fetchDiagnostics() {
     try {
       const resp = await fetch('/api/system');
@@ -562,22 +548,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const mins = Math.floor((diag.uptimeSeconds % 3600) / 60);
         elUptime.textContent = `${hours}h ${mins}m`;
       }
-    } catch (err) {
-      console.error('Error fetching diagnostics:', err);
-    }
+    } catch (err) {}
   }
 
-  // --- SECURE SETTINGS CONTROL PANEL ---
-  const btnSettings = document.getElementById('btn-settings');
-  if (btnSettings) {
-    btnSettings.addEventListener('click', () => {
-      if (isAuthenticated) {
-        openSettingsModal();
-      } else {
-        if (modalAuth) modalAuth.classList.add('active');
-      }
+  // REQUIREMENT 3: MULTI-TAB EXPANDED SETTINGS CONTROL PANEL
+  document.querySelectorAll('.set-tab').forEach((tabBtn) => {
+    tabBtn.addEventListener('click', () => {
+      document.querySelectorAll('.set-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.settings-pane').forEach(p => p.classList.remove('active'));
+
+      tabBtn.classList.add('active');
+      const targetPane = tabBtn.getAttribute('data-stab');
+      const paneEl = document.getElementById(targetPane);
+      if (paneEl) paneEl.classList.add('active');
     });
-  }
+  });
 
   const btnSubmitAuth = document.getElementById('btn-submit-auth');
   if (btnSubmitAuth) {
@@ -601,9 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const authError = document.getElementById('auth-error-msg');
           if (authError) authError.style.display = 'block';
         }
-      } catch (err) {
-        console.error('Auth error:', err);
-      }
+      } catch (err) {}
     });
   }
 
@@ -612,10 +595,40 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const resp = await fetch('/api/config');
       activeConfig = await resp.json();
-      renderSettingsTable(activeConfig.sensors || []);
-    } catch (err) {
-      console.error('Error loading config:', err);
-    }
+      populateSettingsForm(activeConfig);
+    } catch (err) {}
+  }
+
+  function populateSettingsForm(cfg) {
+    // Populate RTD Table
+    const sensors = cfg.sensors || [];
+    renderSettingsTable(sensors);
+
+    // Populate Hardware Form
+    const poller = cfg.poller || {};
+    if (document.getElementById('cfg-rtd-ip')) document.getElementById('cfg-rtd-ip').value = poller.rtdIp || '192.168.1.2';
+    if (document.getElementById('cfg-rtd-port')) document.getElementById('cfg-rtd-port').value = poller.rtdPort || 80;
+    if (document.getElementById('cfg-poll-interval')) document.getElementById('cfg-poll-interval').value = cfg.server ? cfg.server.pollIntervalMs : 2000;
+    if (document.getElementById('cfg-timeout')) document.getElementById('cfg-timeout').value = poller.timeoutMs || 1500;
+    if (document.getElementById('cfg-mock-mode')) document.getElementById('cfg-mock-mode').value = poller.mockMode !== undefined ? String(poller.mockMode) : 'true';
+
+    // Populate Relay Form
+    const relay = cfg.relay || {};
+    const gpio = relay.gpioPins || {};
+    if (document.getElementById('cfg-mute-duration')) document.getElementById('cfg-mute-duration').value = relay.muteDurationSec || 300;
+    if (document.getElementById('cfg-gpio-hooter')) document.getElementById('cfg-gpio-hooter').value = gpio.hooter || 18;
+    if (document.getElementById('cfg-gpio-warning')) document.getElementById('cfg-gpio-warning').value = gpio.warning || 23;
+    if (document.getElementById('cfg-gpio-critical')) document.getElementById('cfg-gpio-critical').value = gpio.critical || 24;
+
+    // Populate InfluxDB Form
+    const influx = cfg.influx || {};
+    if (document.getElementById('cfg-influx-url')) document.getElementById('cfg-influx-url').value = influx.url || 'http://localhost:8086';
+    if (document.getElementById('cfg-influx-org')) document.getElementById('cfg-influx-org').value = influx.org || 'elanadu_heatwatch';
+    if (document.getElementById('cfg-influx-bucket')) document.getElementById('cfg-influx-bucket').value = influx.bucket || 'temperature_telemetry';
+
+    // Populate Security Form
+    const user = cfg.user || {};
+    if (document.getElementById('cfg-user-name')) document.getElementById('cfg-user-name').value = user.username || 'admin';
   }
 
   function renderSettingsTable(sensors) {
@@ -643,8 +656,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSaveSettings = document.getElementById('btn-save-settings');
   if (btnSaveSettings) {
     btnSaveSettings.addEventListener('click', async () => {
-      if (!activeConfig) return;
+      if (!activeConfig) activeConfig = {};
 
+      // Collect Sensors Table Data
       const inputs = document.querySelectorAll('#settings-sensors-table input');
       inputs.forEach(input => {
         const cid = input.getAttribute('data-id');
@@ -654,6 +668,37 @@ document.addEventListener('DOMContentLoaded', () => {
           sensor[field] = field === 'label' ? input.value : parseFloat(input.value);
         }
       });
+
+      // Collect Hardware Data
+      activeConfig.poller = activeConfig.poller || {};
+      activeConfig.poller.rtdIp = document.getElementById('cfg-rtd-ip').value;
+      activeConfig.poller.rtdPort = parseInt(document.getElementById('cfg-rtd-port').value, 10);
+      activeConfig.poller.timeoutMs = parseInt(document.getElementById('cfg-timeout').value, 10);
+      activeConfig.poller.mockMode = document.getElementById('cfg-mock-mode').value === 'true';
+
+      activeConfig.server = activeConfig.server || {};
+      activeConfig.server.pollIntervalMs = parseInt(document.getElementById('cfg-poll-interval').value, 10);
+
+      // Collect Relay Data
+      activeConfig.relay = activeConfig.relay || { gpioPins: {} };
+      activeConfig.relay.muteDurationSec = parseInt(document.getElementById('cfg-mute-duration').value, 10);
+      activeConfig.relay.gpioPins.hooter = parseInt(document.getElementById('cfg-gpio-hooter').value, 10);
+      activeConfig.relay.gpioPins.warning = parseInt(document.getElementById('cfg-gpio-warning').value, 10);
+      activeConfig.relay.gpioPins.critical = parseInt(document.getElementById('cfg-gpio-critical').value, 10);
+
+      // Collect InfluxDB Data
+      activeConfig.influx = activeConfig.influx || {};
+      activeConfig.influx.url = document.getElementById('cfg-influx-url').value;
+      activeConfig.influx.org = document.getElementById('cfg-influx-org').value;
+      activeConfig.influx.bucket = document.getElementById('cfg-influx-bucket').value;
+
+      // Collect Security Data
+      activeConfig.user = activeConfig.user || {};
+      activeConfig.user.username = document.getElementById('cfg-user-name').value;
+      const newPass = document.getElementById('cfg-user-pass').value;
+      if (newPass && newPass.trim().length > 0) {
+        activeConfig.user.password = newPass.trim();
+      }
 
       try {
         const resp = await fetch('/api/config', {
@@ -678,7 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Execute Initial Fetches & Websocket
   fetchImmediateLiveTelemetry();
   fetchHistoricalLogs();
   fetchHistoricalTrends(24);
