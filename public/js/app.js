@@ -1,6 +1,6 @@
 /**
  * HeatWatch 4 — Elanadu Milk Edition
- * Client Application, WebSocket Engine, PDF & CSV Exporters
+ * Client Application & Dual-Logo PDF Exporter Engine
  * Author: Goose Industrial Solutions
  */
 
@@ -13,9 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRangeHours = 24;
   let rawHistoryData = [];
   let isAudioMuted = false;
-
-  let elanaduLogoBase64 = null;
-  let gooseBannerBase64 = null;
 
   // DOM Elements
   const splashScreen = document.getElementById('splash-screen');
@@ -31,16 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconAudioOn = document.getElementById('icon-audio-on');
   const iconAudioOff = document.getElementById('icon-audio-off');
   
-  const elGlobalPill = document.getElementById('global-status-pill');
-  const elGlobalText = document.getElementById('global-status-text');
   const elSensorGrid = document.getElementById('sensor-grid');
   const elAlarmAudio = document.getElementById('alarm-audio');
 
-  // Modals
   const modalAuth = document.getElementById('modal-auth');
   const modalSettings = document.getElementById('modal-settings');
 
-  // Hardcoded Initial Fallback Telemetry Data (Guarantees instant 8-card rendering)
+  // Hardcoded Initial Fallback Telemetry Data
   const fallbackTelemetry = {
     systemStatus: 'NORMAL',
     mode: 'HARDWARE_PPI',
@@ -56,7 +50,29 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  // --- 1. RENDER INSTANT INITIAL TELEMETRY GRID ---
+  // Helper Function: Convert Image URL to Base64 for PDF Export
+  function loadImageAsBase64(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        } catch (e) {
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  }
+
+  // --- 1. RENDER INSTANT TELEMETRY GRID ---
   latestTelemetryData = fallbackTelemetry;
   renderTelemetry(fallbackTelemetry, false);
 
@@ -109,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- 4. LIGHT & DARK THEME SWITCHER (DARK MODE DEFAULT) ---
+  // --- 4. LIGHT & DARK THEME SWITCHER ---
   const savedTheme = localStorage.getItem('heatwatch_theme') || 'theme-dark';
   applyTheme(savedTheme);
 
@@ -231,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- WEBSOCKET TELEMETRY ENGINE ---
+  // --- WEBSOCKET ENGINE ---
   function initWebSocket() {
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -340,10 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // PDF REPORT EXPORT FOR LOGS
+  // REQUIREMENT 2: DUAL-LOGO PDF EXPORT FOR TELEMETRY LOGS (ELANADU LOGO + GOOSE BANNER)
   const btnExportPdfHistory = document.getElementById('btn-export-pdf-history');
   if (btnExportPdfHistory) {
-    btnExportPdfHistory.addEventListener('click', () => {
+    btnExportPdfHistory.addEventListener('click', async () => {
       const rtdSelect = document.getElementById('history-rtd-select');
       const rtdFilter = rtdSelect ? rtdSelect.value : 'ALL';
       if (!rawHistoryData.length) return alert('No historical data available to export.');
@@ -351,13 +367,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      doc.setFontSize(16);
+      // Load Both Logos
+      const elanaduImg = await loadImageAsBase64('assets/elanadu_logo.png');
+      const gooseImg = await loadImageAsBase64('assets/goose_banner.png');
+
+      if (elanaduImg) {
+        doc.addImage(elanaduImg, 'PNG', 14, 10, 32, 20);
+      }
+      if (gooseImg) {
+        doc.addImage(gooseImg, 'PNG', 142, 12, 54, 16);
+      }
+
+      doc.setFontSize(15);
       doc.setTextColor(0, 71, 171);
-      doc.text('Elanadu Milk Products — Telemetry Audit Report', 14, 20);
+      doc.text('Elanadu Milk Products — Telemetry Audit Report', 50, 20);
 
       doc.setFontSize(9);
       doc.setTextColor(100);
-      doc.text(`HeatWatch 4 Telemetry Console | Filter: ${rtdFilter} | Date: ${new Date().toLocaleString()}`, 14, 27);
+      doc.text(`HeatWatch 4 Telemetry Console | Filter: ${rtdFilter} | Date: ${new Date().toLocaleString()}`, 50, 27);
+
+      doc.setDrawColor(200);
+      doc.line(14, 34, 196, 34);
 
       const tableRows = [];
       const sensors = latestTelemetryData ? latestTelemetryData.channels : [];
@@ -372,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       doc.autoTable({
-        startY: 32,
+        startY: 38,
         head: [['Timestamp', 'RTD', 'Process Description', 'Temperature', 'Target', 'Status']],
         body: tableRows,
         headStyles: { fillColor: [0, 71, 171] },
@@ -471,21 +501,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // PDF Export for Trends Graph
+  // REQUIREMENT 1: DUAL-LOGO PDF EXPORT FOR REALTIME TRENDS (ELANADU LOGO + GOOSE BANNER)
   const btnExportPdfTrends = document.getElementById('btn-export-pdf-trends');
   if (btnExportPdfTrends) {
-    btnExportPdfTrends.addEventListener('click', () => {
+    btnExportPdfTrends.addEventListener('click', async () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('landscape');
 
-      doc.setFontSize(18);
+      // Load Both Logos
+      const elanaduImg = await loadImageAsBase64('assets/elanadu_logo.png');
+      const gooseImg = await loadImageAsBase64('assets/goose_banner.png');
+
+      if (elanaduImg) {
+        doc.addImage(elanaduImg, 'PNG', 14, 8, 38, 24);
+      }
+      if (gooseImg) {
+        doc.addImage(gooseImg, 'PNG', 222, 10, 60, 18);
+      }
+
+      doc.setFontSize(16);
       doc.setTextColor(0, 71, 171);
-      doc.text('Elanadu Milk Products — Realtime Thermal Trends Graph', 14, 18);
+      doc.text('Elanadu Milk Products — Realtime Thermal Trends Graph', 56, 20);
+
+      doc.setFontSize(9);
+      doc.setTextColor(100);
+      doc.text(`HeatWatch 4 Telemetry Console | Range: Last ${currentRangeHours} Hours | Date: ${new Date().toLocaleString()}`, 56, 27);
+
+      doc.setDrawColor(200);
+      doc.line(14, 34, 282, 34);
 
       const canvas = document.getElementById('trendChart');
       if (canvas) {
         const imgData = canvas.toDataURL('image/png');
-        doc.addImage(imgData, 'PNG', 14, 28, 268, 145);
+        doc.addImage(imgData, 'PNG', 14, 38, 268, 150);
       }
 
       doc.save(`Elanadu_HeatWatch_Trends_Graph_${currentRangeHours}h_${Date.now()}.pdf`);
@@ -519,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- SECURE SETTINGS ---
+  // --- SECURE SETTINGS CONTROL PANEL ---
   const btnSettings = document.getElementById('btn-settings');
   if (btnSettings) {
     btnSettings.addEventListener('click', () => {
