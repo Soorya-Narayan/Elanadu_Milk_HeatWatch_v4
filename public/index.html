@@ -20,7 +20,7 @@
 </head>
 <body class="theme-dark">
 
-  <!-- REQUIREMENT 1: SPLASH LOADING SCREEN (Only Elanadu logo, progress bar, tagline "Powered by Goose Industrial Solutions", NO HeatWatch4 text, NO Goose logo on splash) -->
+  <!-- REQUIREMENT 4: SPLASH LOADING SCREEN WITH LIGHT/DARK MODE SUPPORT -->
   <div id="splash-screen" class="splash-overlay-elanadu">
     <div class="splash-box">
       <div class="splash-logo-container">
@@ -40,11 +40,12 @@
   <!-- MAIN APPLICATION SHELL -->
   <div id="app" class="app-shell">
     
-    <!-- REQUIREMENT 1 & 2 & 3: NAVBAR HEADER (Elanadu Palette Inspired) -->
+    <!-- REQUIREMENT 2 & 3: NAVBAR HEADER (Elanadu Logo + Goose Logo, NO "Elanadu Milk Products" text) -->
     <header class="app-header-elanadu">
       <div class="header-left">
-        <img src="assets/elanadu_logo.png" alt="Elanadu Milk" class="header-elanadu-logo" />
-        <span class="header-client-title">Elanadu Milk Products</span>
+        <!-- REQUIREMENT 3: Goose logo in navbar alongside Elanadu logo -->
+        <img src="assets/goose_icon.png" alt="Goose" class="header-goose-icon" />
+        <img src="assets/elanadu_logo.png" alt="Elanadu" class="header-elanadu-logo" />
       </div>
 
       <div class="header-center">
@@ -52,7 +53,7 @@
       </div>
 
       <div class="header-right">
-        <!-- REQUIREMENT 3: VIEWS DROPDOWN MENU BUTTON -->
+        <!-- VIEWS DROPDOWN MENU BUTTON -->
         <div class="dropdown-wrapper">
           <button id="btn-views-menu" class="btn-elanadu btn-nav-dropdown" title="Select View">
             <i class="fa-solid fa-bars-staggered"></i> <span id="current-view-label">Dashboard</span> <i class="fa-solid fa-chevron-down caret-icon"></i>
@@ -74,7 +75,7 @@
           </div>
         </div>
 
-        <!-- REQUIREMENT 6: OPTIMIZED LIGHT/DARK MODE TOGGLE -->
+        <!-- LIGHT/DARK MODE TOGGLE -->
         <button id="btn-theme-toggle" class="btn-elanadu btn-icon-square" title="Toggle Light / Dark Mode">
           <i class="fa-solid fa-sun" id="icon-theme-sun"></i>
           <i class="fa-solid fa-moon" id="icon-theme-moon" style="display:none;"></i>
@@ -85,34 +86,14 @@
           <i class="fa-solid fa-volume-xmark" id="icon-audio-off" style="display:none;"></i>
         </button>
 
-        <!-- REQUIREMENT 3: SETTINGS IN NAVBAR -->
+        <!-- SETTINGS BUTTON -->
         <button id="btn-settings" class="btn-elanadu btn-icon-square" title="Secure Plant Settings">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </header>
 
-    <!-- SUB-BAR (ACTIVE VIEW INDICATOR, STATUS & CLOCK) -->
-    <div class="sub-status-bar">
-      <div class="view-indicator">
-        <span class="indicator-dot"></span>
-        <span id="active-view-name">Live Dashboard Grid</span>
-      </div>
-
-      <div class="sub-status-center">
-        <div id="global-status-pill" class="status-pill status-normal">
-          <span class="status-dot"></span>
-          <span id="global-status-text">SYSTEM NORMAL</span>
-        </div>
-      </div>
-
-      <div class="clock-display">
-        <i class="fa-regular fa-clock"></i>
-        <span id="live-time">12:00:00 AM</span>
-        <span class="clock-divider">•</span>
-        <span id="live-date">Sep 16, 2026</span>
-      </div>
-    </div>
+    <!-- REQUIREMENT 1: REMOVED SUB-STATUS BAR ("Live Dashboard Grid", "SYSTEM NORMAL", clock display removed) -->
 
     <!-- MAIN VIEWPORT CONTENT -->
     <main class="main-viewport-content">
@@ -153,8 +134,6 @@
               <button id="btn-export-csv-trends" class="btn-elanadu btn-action-csv">
                 <i class="fa-solid fa-file-csv"></i> Export CSV
               </button>
-              
-              <!-- REQUIREMENT 4: PDF EXPORT WITH GOOSE BANNER & ELANADU LOGO & TRENDS CHART -->
               <button id="btn-export-pdf-trends" class="btn-elanadu btn-action-pdf">
                 <i class="fa-solid fa-file-pdf"></i> Download PDF Report
               </button>
@@ -167,7 +146,7 @@
         </div>
       </section>
 
-      <!-- REQUIREMENT 5: STANDARDIZED TELEMETRY LOGS TAB -->
+      <!-- TAB 3: STANDARDIZED TELEMETRY LOGS TAB -->
       <section id="tab-history" class="view-pane">
         <div class="elanadu-panel-box">
           <div class="panel-toolbar">
@@ -200,8 +179,6 @@
               <button id="btn-export-csv-history" class="btn-elanadu btn-secondary-slate">
                 <i class="fa-solid fa-file-csv"></i> CSV
               </button>
-              
-              <!-- REQUIREMENT 4: PDF EXPORT WITH GOOSE BANNER & ELANADU LOGO -->
               <button id="btn-export-pdf-history" class="btn-elanadu btn-secondary-slate">
                 <i class="fa-solid fa-file-pdf"></i> PDF Audit
               </button>
@@ -284,11 +261,8 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="app-footer-elanadu">
-      <span>HeatWatch 4 Telemetry Console • <strong>Elanadu Milk Products</strong></span>
-      <span>Powered by <strong>Goose Industrial Solutions</strong></span>
-    </footer>
+    <!-- REQUIREMENT 5: REMOVED FOOTER COMPLETELY -->
+
   </div>
 
   <!-- AUTH & SETTINGS MODALS -->

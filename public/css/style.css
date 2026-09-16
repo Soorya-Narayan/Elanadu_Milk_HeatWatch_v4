@@ -10,7 +10,6 @@
 body.theme-dark {
   --bg-app: #040a17;
   --bg-header: #07132a;
-  --bg-subnav: #091938;
   --bg-panel: #0a1b3d;
   --bg-card: #0c2047;
   --bg-card-hover: #102756;
@@ -39,7 +38,6 @@ body.theme-dark {
 body.theme-light {
   --bg-app: #edf3fa;
   --bg-header: #ffffff;
-  --bg-subnav: #e2ebf6;
   --bg-panel: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #f5f8fd;
@@ -87,9 +85,7 @@ body {
 }
 
 /* ==========================================================================
-   REQUIREMENT 1: SPLASH LOADING SCREEN
-   Only Elanadu Logo, progress bar, tagline "Powered by Goose Industrial Solutions"
-   No HeatWatch4 text, No Goose logo
+   REQUIREMENT 4: SPLASH LOADING SCREEN WITH LIGHT & DARK MODE SUPPORT
    ========================================================================== */
 .splash-overlay-elanadu {
   position: fixed;
@@ -100,6 +96,11 @@ body {
   align-items: center;
   justify-content: center;
   transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* Light Mode Splash Screen */
+body.theme-light .splash-overlay-elanadu {
+  background: radial-gradient(circle at center, #ffffff 0%, #e2ecf8 100%);
 }
 
 .splash-overlay-elanadu.fade-out {
@@ -134,7 +135,7 @@ body {
 .splash-track {
   width: 260px;
   height: 5px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(125, 125, 125, 0.2);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 24px;
@@ -149,15 +150,15 @@ body {
 
 .splash-footer-tagline {
   font-size: 0.88rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 .splash-footer-tagline strong {
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 /* ==========================================================================
-   REQUIREMENT 1 & 2 & 3: NAVBAR HEADER & DROPDOWN MENU
+   REQUIREMENT 2 & 3: NAVBAR HEADER (Elanadu Logo + Goose Logo)
    ========================================================================== */
 .app-header-elanadu {
   display: flex;
@@ -166,27 +167,27 @@ body {
   padding: 10px 24px;
   background: var(--bg-header);
   border-bottom: 1px solid var(--border-app);
-  height: 60px;
+  height: 62px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+}
+
+.header-goose-icon {
+  height: 34px;
+  width: auto;
+  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
 }
 
 .header-elanadu-logo {
   height: 40px;
   width: auto;
   object-fit: contain;
-}
-
-.header-client-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text-muted);
   border-left: 1px solid var(--border-subtle);
-  padding-left: 14px;
+  padding-left: 12px;
 }
 
 .header-center {
@@ -195,7 +196,7 @@ body {
 }
 
 .header-system-title {
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, var(--text-main) 0%, var(--elanadu-yellow) 100%);
@@ -209,7 +210,7 @@ body {
   gap: 10px;
 }
 
-/* REQUIREMENT 3: DROPDOWN MENU STYLING */
+/* DROPDOWN MENU STYLING */
 .dropdown-wrapper {
   position: relative;
 }
@@ -328,68 +329,11 @@ body {
   border-color: var(--elanadu-yellow);
 }
 
-/* SUB STATUS BAR */
-.sub-status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: var(--bg-subnav);
-  border-bottom: 1px solid var(--border-app);
-  height: 40px;
-  font-size: 0.8rem;
-}
-
-.view-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.indicator-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--elanadu-yellow);
-  box-shadow: 0 0 10px var(--elanadu-yellow);
-}
-
-.status-pill {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 3px 12px;
-  border-radius: 12px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.status-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-.status-normal { background: rgba(0, 230, 118, 0.15); color: var(--color-green); border: 1px solid var(--color-green); }
-.status-normal .status-dot { background: var(--color-green); }
-
-.status-warning { background: rgba(255, 184, 0, 0.2); color: var(--color-warning); border: 1px solid var(--color-warning); }
-.status-warning .status-dot { background: var(--color-warning); }
-
-.status-critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); border: 1px solid var(--color-critical); }
-.status-critical .status-dot { background: var(--color-critical); }
-
-.clock-display {
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--text-muted);
-}
-.clock-divider { margin: 0 4px; color: var(--border-subtle); }
-
-/* --- MAIN VIEWPORT --- */
+/* --- MAIN VIEWPORT (Clean Full-Height Viewport with Sub-bar and Footer Removed) --- */
 .main-viewport-content {
   flex: 1;
   padding: 16px 24px;
-  height: calc(100vh - 126px);
+  height: calc(100vh - 62px);
   overflow: hidden;
 }
 
@@ -403,7 +347,7 @@ body {
 }
 
 /* ==========================================================================
-   REQUIREMENT 5: COMPACT 8-CHANNEL TELEMETRY GRID (2 ROWS x 4 COLUMNS NO SCROLL)
+   COMPACT 8-CHANNEL TELEMETRY GRID (2 ROWS x 4 COLUMNS NO SCROLL)
    ========================================================================== */
 .elanadu-grid-2x4 {
   display: grid;
@@ -514,7 +458,7 @@ body {
 }
 
 /* ==========================================================================
-   REQUIREMENT 5 & 6: STANDARDIZED TELEMETRY LOGS & TRENDS PANELS
+   TELEMETRY LOGS & TRENDS PANELS
    ========================================================================== */
 .elanadu-panel-box {
   background: var(--bg-panel);
@@ -614,9 +558,7 @@ body {
   top: 0;
 }
 
-/* ==========================================================================
-   SYSTEM DIAGNOSTICS
-   ========================================================================== */
+/* SYSTEM DIAGNOSTICS */
 .diag-metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -719,9 +661,3 @@ body {
 .margin-t { margin-top: 14px; }
 .subtle-text { font-size: 0.85rem; color: var(--text-muted); }
 .error-msg-text { color: var(--color-critical); font-size: 0.8rem; margin-top: 6px; }
-
-.app-footer-elanadu {
-  display: flex; justify-content: space-between; padding: 6px 24px;
-  font-size: 0.72rem; color: var(--text-subtle); border-top: 1px solid var(--border-app);
-  background: var(--bg-header); height: 26px; align-items: center;
-}
