@@ -9,8 +9,6 @@ set -e
 
 CURR_DIR="$PWD"
 CURR_USER="$USER"
-NODE_PATH=$(which node || echo "/usr/bin/node")
-PYTHON_PATH=$(which python3 || echo "/usr/bin/python3")
 
 echo "======================================================================"
 echo " HeatWatch 4 — Elanadu Milk Edition Setup & Kiosk Installer"
@@ -18,14 +16,24 @@ echo " Directory: $CURR_DIR"
 echo " User:      $CURR_USER"
 echo "======================================================================"
 
+# 0. Check & Install Node.js / npm if missing
+if ! command -v node &> /dev/null || ! command -v npm &> /dev/null; then
+    echo "[0/5] Node.js or npm missing. Installing Node.js..."
+    sudo apt update
+    sudo apt install -y nodejs npm python3-pip python3-venv chromium-browser
+fi
+
+NODE_PATH=$(which node || echo "/usr/bin/node")
+PYTHON_PATH=$(which python3 || echo "/usr/bin/python3")
+
 # 1. Install Node.js Dependencies
 echo "[1/5] Installing Node.js packages..."
 npm install
 
 # 2. Setup Python Environment & Dependencies
 echo "[2/5] Setting up Python dependencies..."
-$PYTHON_PATH -m pip install --upgrade pip 2>/dev/null || true
-$PYTHON_PATH -m pip install requests influxdb-client RPi.GPIO 2>/dev/null || true
+$PYTHON_PATH -m pip install --upgrade pip --break-system-packages 2>/dev/null || true
+$PYTHON_PATH -m pip install requests influxdb-client RPi.GPIO --break-system-packages 2>/dev/null || true
 
 # 3. Create Systemd Services
 echo "[3/5] Registering Systemd Services..."
