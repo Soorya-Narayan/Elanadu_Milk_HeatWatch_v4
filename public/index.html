@@ -3,127 +3,292 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HeatWatch 4 — Elanadu Milk Products Telemetry</title>
+  <title>HeatWatch 4 — Elanadu Milk Telemetry</title>
   
-  <!-- Modern Industrial Typography -->
+  <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome Icons & Chart.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Chart.js & jsPDF PDF Export Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
   <!-- Application Stylesheet -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="theme-dark">
 
-  <!-- Main Container -->
+  <!-- 4. SPLASH LOADING SCREEN -->
+  <div id="splash-screen" class="splash-overlay">
+    <div class="splash-content">
+      <div class="splash-logo-wrap">
+        <img src="assets/elanadu_logo.png" alt="Elanadu Milk Products" class="splash-logo" />
+      </div>
+      <h2 class="splash-title">HeatWatch 4</h2>
+      <p class="splash-subtitle">Dairy Processing Telemetry & Temperature Monitoring System</p>
+      
+      <div class="splash-progress-bar">
+        <div class="splash-progress-fill"></div>
+      </div>
+      <span class="splash-status-text">Initializing Hardware Interfaces & Telemetry Stream...</span>
+
+      <div class="splash-tagline">
+        <img src="assets/goose_icon.png" alt="Goose" class="splash-goose-icon" />
+        <span>Powered by <strong>Goose Industrial Solutions</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
   <div id="app" class="app-layout">
     
-    <!-- Top Bar Navigation Header -->
+    <!-- 1. NAVBAR (Elanadu Logo Left | HeatWatch Middle | Goose Logo + Settings Right) -->
     <header class="app-header">
-      <div class="brand-container">
-        <img src="assets/elanadu_logo.png" alt="Elanadu Milk" class="client-logo" />
-        <div class="brand-divider"></div>
-        <div class="brand-meta">
-          <h1 class="system-title">HeatWatch 4</h1>
-          <span class="facility-subtitle">Elanadu Milk Products • Dairy Processing Telemetry</span>
-        </div>
+      <!-- Left side: Elanadu logo -->
+      <div class="navbar-left">
+        <img src="assets/elanadu_logo.png" alt="Elanadu Milk Logo" class="brand-logo-elanadu" />
+        <span class="client-badge">Elanadu Milk Products</span>
       </div>
 
-      <div class="header-center">
+      <!-- Middle side: "HeatWatch" -->
+      <div class="navbar-center">
+        <h1 class="nav-system-title">HeatWatch</h1>
         <div id="global-status-pill" class="status-badge status-normal">
           <span class="status-dot"></span>
           <span id="global-status-text">SYSTEM NORMAL</span>
         </div>
-        <div class="telemetry-mode-tag">
-          <i class="fa-solid fa-microchip"></i> <span id="telemetry-mode-label">LIVE HARDWARE</span>
-        </div>
       </div>
 
-      <div class="header-actions">
-        <div class="clock-widget">
-          <div id="live-time" class="time-display">12:00:00 AM</div>
-          <div id="live-date" class="date-display">Sep 16, 2026</div>
+      <!-- Right side: Goose logo & Settings -->
+      <div class="navbar-right">
+        <div class="goose-brand-tag" title="Goose Industrial Automation">
+          <img src="assets/goose_icon.png" alt="Goose Logo" class="brand-logo-goose" />
         </div>
 
-        <button id="btn-mute-alarm" class="btn btn-warning btn-icon" title="Mute Alarm Siren">
-          <i class="fa-solid fa-volume-xmark"></i>
-          <span>Mute Siren</span>
+        <button id="btn-theme-toggle" class="btn btn-icon-only" title="Toggle Light / Dark Mode">
+          <i class="fa-solid fa-sun" id="theme-icon-sun"></i>
+          <i class="fa-solid fa-moon" id="theme-icon-moon" style="display:none;"></i>
         </button>
 
-        <button id="btn-system-diag" class="btn btn-glass btn-icon" title="System Diagnostics">
-          <i class="fa-solid fa-server"></i>
+        <button id="btn-mute-alarm" class="btn btn-warning-ghost btn-compact" title="Mute Siren">
+          <i class="fa-solid fa-volume-xmark"></i> Mute Siren
         </button>
 
-        <button id="btn-settings" class="btn btn-primary btn-icon" title="Admin Settings">
-          <i class="fa-solid fa-gear"></i>
+        <button id="btn-settings" class="btn btn-primary btn-compact" title="Secure Plant Settings">
+          <i class="fa-solid fa-gear"></i> Settings
         </button>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="nav-tabs-bar">
-      <button class="nav-tab active" data-tab="tab-telemetry">
-        <i class="fa-solid fa-temperature-three-quarters"></i> Live Telemetry Grid
-      </button>
-      <button class="nav-tab" data-tab="tab-trends">
-        <i class="fa-solid fa-chart-line"></i> Thermal Analytics & Trends
-      </button>
+    <!-- Sub-Header Navigation Tabs & Clock -->
+    <div class="sub-header-bar">
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="tab-telemetry">
+          <i class="fa-solid fa-gauge-high"></i> Live Telemetry Grid
+        </button>
+        <button class="nav-tab" data-tab="tab-history">
+          <i class="fa-solid fa-table-list"></i> Historical Data Logs
+        </button>
+        <button class="nav-tab" data-tab="tab-trends">
+          <i class="fa-solid fa-chart-line"></i> Thermal Trends
+        </button>
+        <button class="nav-tab" data-tab="tab-diagnostics">
+          <i class="fa-solid fa-microchip"></i> System Diagnostics
+        </button>
+      </nav>
 
-    </nav>
+      <div class="clock-widget">
+        <i class="fa-regular fa-clock"></i>
+        <span id="live-time">12:00:00 AM</span>
+        <span class="clock-sep">•</span>
+        <span id="live-date">Sep 16, 2026</span>
+      </div>
+    </div>
 
-    <!-- Main Content Body -->
-    <main class="content-area">
+    <!-- MAIN VIEWPORT CONTENT (No-scroll grid viewport for Tab 1) -->
+    <main class="content-viewport">
       
-      <!-- TAB 1: LIVE TELEMETRY GRID -->
-      <section id="tab-telemetry" class="tab-pane active">
-        <div class="grid-header-summary">
-          <div class="summary-metric-card">
-            <span class="metric-label">Active Sensors</span>
-            <span class="metric-value">8 / 8</span>
-          </div>
-          <div class="summary-metric-card">
-            <span class="metric-label">Polling Frequency</span>
-            <span class="metric-value">2.0 sec</span>
-          </div>
-          <div class="summary-metric-card">
-            <span class="metric-label">Active Alarms</span>
-            <span id="active-alarm-count" class="metric-value status-text-normal">0 Breach</span>
-          </div>
-          <div class="summary-metric-card">
-            <span class="metric-label">Data Storage</span>
-            <span class="metric-value">InfluxDB v2</span>
-          </div>
-        </div>
-
-        <!-- 8-Channel Dynamic Telemetry Grid -->
-        <div id="sensor-grid" class="sensor-grid-container">
-          <!-- Dynamically populated by app.js -->
+      <!-- 5. COMPACT 8-CHANNEL LIVE TELEMETRY GRID (NO SCROLLING) -->
+      <section id="tab-telemetry" class="tab-pane active pane-compact-grid">
+        <div id="sensor-grid" class="sensor-grid-8ch">
+          <!-- Dynamically populated 8 cards fitting 100% viewport -->
         </div>
       </section>
 
-      <!-- TAB 2: THERMAL ANALYTICS & TRENDS -->
-      <section id="tab-trends" class="tab-pane">
-        <div class="chart-control-panel">
-          <div class="panel-left">
-            <h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Multi-Channel Thermal Trends</h3>
-            <span class="panel-subtitle">Real-time historical trend profiling from InfluxDB engine</span>
+      <!-- 6. HISTORICAL DATA SECTION WITH CSV & PDF EXPORTS FOR INDIVIDUAL RTDs -->
+      <section id="tab-history" class="tab-pane">
+        <div class="section-card-panel">
+          <div class="toolbar-flex">
+            <div class="toolbar-group">
+              <label><i class="fa-solid fa-filter"></i> Select Sensor / RTD:</label>
+              <select id="history-rtd-select" class="form-select">
+                <option value="ALL">All RTD Channels (CH1 - CH8)</option>
+                <option value="CH1">CH1 — Pasteurizer Heating Zone</option>
+                <option value="CH2">CH2 — Pasteurizer Holding Tube</option>
+                <option value="CH3">CH3 — Pre-Chiller Milk Outlet</option>
+                <option value="CH4">CH4 — Ice Bank Tank (IBT) Water</option>
+                <option value="CH5">CH5 — Raw Milk Storage Silo 1</option>
+                <option value="CH6">CH6 — Processed Milk Silo 2</option>
+                <option value="CH7">CH7 — Finished Product Cold Room</option>
+                <option value="CH8">CH8 — CIP Clean-In-Place Rinse</option>
+              </select>
+
+              <label><i class="fa-regular fa-calendar-days"></i> Time Interval:</label>
+              <select id="history-hours-select" class="form-select">
+                <option value="1">Last 1 Hour</option>
+                <option value="6">Last 6 Hours</option>
+                <option value="24" selected>Last 24 Hours</option>
+                <option value="168">Last 7 Days</option>
+              </select>
+
+              <button id="btn-refresh-history" class="btn btn-glass">
+                <i class="fa-solid fa-rotate-right"></i> Query Logs
+              </button>
+            </div>
+
+            <div class="toolbar-group">
+              <button id="btn-export-csv-history" class="btn btn-export btn-csv">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+              </button>
+              <button id="btn-export-pdf-history" class="btn btn-export btn-pdf">
+                <i class="fa-solid fa-file-pdf"></i> Export PDF Report
+              </button>
+            </div>
           </div>
-          <div class="panel-right">
-            <div class="btn-group-range">
-              <button class="btn-range active" data-hours="1">1 Hour</button>
-              <button class="btn-range" data-hours="6">6 Hours</button>
-              <button class="btn-range" data-hours="24">24 Hours</button>
-              <button class="btn-range" data-hours="168">7 Days</button>
+
+          <div class="table-responsive-wrapper">
+            <table class="data-table" id="history-data-table">
+              <thead>
+                <tr id="history-table-header">
+                  <th>Timestamp</th>
+                  <th>Channel</th>
+                  <th>Process Description</th>
+                  <th>Reading (°C)</th>
+                  <th>Setpoint (°C)</th>
+                  <th>Operational Status</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <!-- Data populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. TRENDS SECTION WITH CSV & PDF EXPORTS FOR INDIVIDUAL RTDs -->
+      <section id="tab-trends" class="tab-pane">
+        <div class="section-card-panel">
+          <div class="toolbar-flex">
+            <div class="toolbar-group">
+              <label><i class="fa-solid fa-chart-diagram"></i> Filter RTD Channel:</label>
+              <select id="trends-rtd-select" class="form-select">
+                <option value="ALL">All RTD Channels (Overlaid)</option>
+                <option value="CH1">CH1 — Pasteurizer Heating Zone</option>
+                <option value="CH2">CH2 — Pasteurizer Holding Tube</option>
+                <option value="CH3">CH3 — Pre-Chiller Milk Outlet</option>
+                <option value="CH4">CH4 — Ice Bank Tank (IBT) Water</option>
+                <option value="CH5">CH5 — Raw Milk Storage Silo 1</option>
+                <option value="CH6">CH6 — Processed Milk Silo 2</option>
+                <option value="CH7">CH7 — Finished Product Cold Room</option>
+                <option value="CH8">CH8 — CIP Clean-In-Place Rinse</option>
+              </select>
+
+              <div class="btn-group-range">
+                <button class="btn-range active" data-hours="1">1h</button>
+                <button class="btn-range" data-hours="6">6h</button>
+                <button class="btn-range" data-hours="24">24h</button>
+                <button class="btn-range" data-hours="168">7d</button>
+              </div>
+            </div>
+
+            <div class="toolbar-group">
+              <button id="btn-export-csv-trends" class="btn btn-export btn-csv">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+              </button>
+              <button id="btn-export-pdf-trends" class="btn btn-export btn-pdf">
+                <i class="fa-solid fa-file-pdf"></i> Export PDF Chart Report
+              </button>
+            </div>
+          </div>
+
+          <div class="chart-canvas-box">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. SYSTEM DIAGNOSTICS & RESOURCE MONITOR -->
+      <section id="tab-diagnostics" class="tab-pane">
+        <div class="diag-dashboard-grid">
+          <div class="diag-card-widget">
+            <div class="widget-icon icon-cpu"><i class="fa-solid fa-cpu"></i></div>
+            <div class="widget-body">
+              <span class="widget-label">SBC CPU Load</span>
+              <span id="diag-cpu-load" class="widget-value">--%</span>
+              <div class="widget-progress"><div id="bar-cpu-load" class="progress-fill" style="width: 0%;"></div></div>
+            </div>
+          </div>
+
+          <div class="diag-card-widget">
+            <div class="widget-icon icon-temp"><i class="fa-solid fa-temperature-high"></i></div>
+            <div class="widget-body">
+              <span class="widget-label">Core SoC Temp</span>
+              <span id="diag-cpu-temp" class="widget-value">-- °C</span>
+              <div class="widget-progress"><div id="bar-cpu-temp" class="progress-fill fill-temp" style="width: 0%;"></div></div>
+            </div>
+          </div>
+
+          <div class="diag-card-widget">
+            <div class="widget-icon icon-ram"><i class="fa-solid fa-memory"></i></div>
+            <div class="widget-body">
+              <span class="widget-label">System RAM Allocation</span>
+              <span id="diag-ram-usage" class="widget-value">-- / -- MB</span>
+              <div class="widget-progress"><div id="bar-ram-usage" class="progress-fill" style="width: 0%;"></div></div>
+            </div>
+          </div>
+
+          <div class="diag-card-widget">
+            <div class="widget-icon icon-disk"><i class="fa-solid fa-hard-drive"></i></div>
+            <div class="widget-body">
+              <span class="widget-label">Storage Usage (NVMe/SD)</span>
+              <span id="diag-disk-usage" class="widget-value">--%</span>
+              <div class="widget-progress"><div id="bar-disk-usage" class="progress-fill" style="width: 0%;"></div></div>
             </div>
           </div>
         </div>
 
-        <div class="chart-container-wrapper glass-card">
-          <canvas id="trendChart"></canvas>
+        <div class="diag-detail-panel">
+          <h3 class="panel-section-title"><i class="fa-solid fa-network-wired"></i> Industrial Telemetry Infrastructure Health</h3>
+          <div class="diag-specs-table">
+            <div class="spec-row">
+              <span class="spec-key">Telemetry Module:</span>
+              <span class="spec-val">PPI AIME 8U Multi-Channel RTD Controller (`192.168.1.2`)</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-key">Time-Series Database:</span>
+              <span class="spec-val">InfluxDB v2 (`elanadu_heatwatch` / `temperature_telemetry`)</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-key">Dashboard Daemon:</span>
+              <span class="spec-val status-ok">Active (`heatwatch-dashboard.service`)</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-key">Poller Daemon:</span>
+              <span class="spec-val status-ok">Active (`heatwatch-poller.service`)</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-key">Siren Relay Daemon:</span>
+              <span class="spec-val status-ok">Active (`heatwatch-relay.service`)</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-key">Host SBC Model:</span>
+              <span class="spec-val">Raspberry Pi 5 (Debian Bookworm 64-bit)</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -135,63 +300,24 @@
         <span>HeatWatch 4 Telemetry Console • <strong>Elanadu Milk Products</strong></span>
       </div>
       <div class="footer-right">
-        <span>Engineered by <strong>Goose Industrial Solutions</strong></span>
+        <span>Powered by <strong>Goose Industrial Solutions</strong></span>
       </div>
     </footer>
   </div>
 
-  <!-- MODAL 1: SYSTEM DIAGNOSTICS -->
-  <div id="modal-diagnostics" class="modal-overlay">
-    <div class="modal-box modal-medium glass-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-microchip"></i> System Diagnostics & SBC Health</h3>
-        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="diag-grid">
-          <div class="diag-card">
-            <i class="fa-solid fa-cpu diag-icon"></i>
-            <span class="diag-title">CPU Load</span>
-            <span id="diag-cpu-load" class="diag-value">--%</span>
-          </div>
-          <div class="diag-card">
-            <i class="fa-solid fa-temperature-high diag-icon"></i>
-            <span class="diag-title">Core Temperature</span>
-            <span id="diag-cpu-temp" class="diag-value">-- °C</span>
-          </div>
-          <div class="diag-card">
-            <i class="fa-solid fa-memory diag-icon"></i>
-            <span class="diag-title">RAM Usage</span>
-            <span id="diag-ram-usage" class="diag-value">-- MB</span>
-          </div>
-          <div class="diag-card">
-            <i class="fa-solid fa-hard-drive diag-icon"></i>
-            <span class="diag-title">NVMe / SD Storage</span>
-            <span id="diag-disk-usage" class="diag-value">--%</span>
-          </div>
-        </div>
-        <div class="diag-info-box">
-          <div><strong>Telemetry Module:</strong> PPI AIME 8U (192.168.1.2)</div>
-          <div><strong>Database Engine:</strong> InfluxDB v2 (elanadu_heatwatch)</div>
-          <div><strong>Daemon Status:</strong> Dashboard (Active) | Poller (Active) | Relay (Active)</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 2: PASSWORD AUTHENTICATION -->
+  <!-- 9. SECURE SETTINGS CONTROL PANEL & AUTH MODALS -->
   <div id="modal-auth" class="modal-overlay">
-    <div class="modal-box modal-small glass-card">
+    <div class="modal-box modal-small">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-lock"></i> Administrator Login</h3>
+        <h3><i class="fa-solid fa-shield-halved"></i> Administrator Authentication</h3>
         <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="text-subtle">Enter administrator password to unlock plant settings:</p>
-        <div class="form-group">
+        <p class="text-subtle">Enter plant administrator password to access secure settings:</p>
+        <div class="form-group margin-v">
           <input type="password" id="auth-password" class="form-control" placeholder="Enter Admin Password..." />
         </div>
-        <div id="auth-error-msg" class="text-error" style="display:none;">Invalid credentials</div>
+        <div id="auth-error-msg" class="text-error" style="display:none;">Invalid password</div>
         <div class="modal-actions">
           <button id="btn-submit-auth" class="btn btn-primary w-full">Authenticate</button>
         </div>
@@ -199,15 +325,14 @@
     </div>
   </div>
 
-  <!-- MODAL 3: ADMIN SETTINGS -->
   <div id="modal-settings" class="modal-overlay">
-    <div class="modal-box modal-large glass-card">
+    <div class="modal-box modal-large">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-sliders"></i> Plant Sensor Configuration & Alarm Limits</h3>
+        <h3><i class="fa-solid fa-sliders"></i> Plant Sensor Configuration & Threshold Limits</h3>
         <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <div class="settings-scroll-area">
+        <div class="settings-scroll-table">
           <table class="settings-table">
             <thead>
               <tr>
@@ -226,7 +351,7 @@
             </tbody>
           </table>
         </div>
-        <div class="modal-actions flex-between">
+        <div class="modal-actions flex-between margin-top">
           <button id="btn-reset-factory" class="btn btn-danger-ghost">Reset Defaults</button>
           <div class="flex-gap">
             <button class="btn btn-glass modal-close">Cancel</button>
@@ -237,10 +362,7 @@
     </div>
   </div>
 
-  <!-- Audio Alarm Chime -->
   <audio id="alarm-audio" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto" loop></audio>
-
-  <!-- Application JS Script -->
   <script src="js/app.js"></script>
 </body>
 </html>
