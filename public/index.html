@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   
-  <!-- Chart.js & Export Libraries -->
+  <!-- Chart.js & PDF Export Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -20,226 +20,262 @@
 </head>
 <body class="theme-dark">
 
-  <!-- SCREENSHOT 1: SPLASH LOADING SCREEN (Pure Black, Central Glowing Cyan Goose + Elanadu Tagline) -->
-  <div id="splash-screen" class="splash-screen-hw3">
-    <div class="splash-content-hw3">
-      <div class="splash-goose-wrapper">
-        <img src="assets/goose_icon.png" alt="Goose Logo" class="splash-cyan-goose" />
+  <!-- REQUIREMENT 1: SPLASH LOADING SCREEN (Only Elanadu logo, progress bar, tagline "Powered by Goose Industrial Solutions", NO HeatWatch4 text, NO Goose logo on splash) -->
+  <div id="splash-screen" class="splash-overlay-elanadu">
+    <div class="splash-box">
+      <div class="splash-logo-container">
+        <img src="assets/elanadu_logo.png" alt="Elanadu Milk Products" class="splash-elanadu-main-logo" />
       </div>
-      <div class="splash-elanadu-tag">
-        <img src="assets/elanadu_logo.png" alt="Elanadu Milk" class="splash-elanadu-logo" />
-        <span class="splash-system-name">HeatWatch 4</span>
+
+      <div class="splash-track">
+        <div class="splash-fill" id="splash-progress-bar"></div>
       </div>
-      <div class="splash-progress-track">
-        <div class="splash-progress-fill" id="splash-progress-bar"></div>
+
+      <div class="splash-footer-tagline">
+        Powered by <strong>Goose Industrial Solutions</strong>
       </div>
-      <div class="splash-powered-tagline">Powered by Goose Industrial Solutions</div>
     </div>
   </div>
 
   <!-- MAIN APPLICATION SHELL -->
-  <div id="app" class="app-shell-hw3">
+  <div id="app" class="app-shell">
     
-    <!-- SCREENSHOT 2: HEADER NAVBAR PANEL -->
-    <header class="hw3-header-panel">
-      <div class="header-left-brand">
-        <img src="assets/goose_icon.png" alt="Goose" class="header-goose-icon" />
-        <img src="assets/elanadu_logo.png" alt="Elanadu" class="header-elanadu-logo" />
+    <!-- REQUIREMENT 1 & 2 & 3: NAVBAR HEADER (Elanadu Palette Inspired) -->
+    <header class="app-header-elanadu">
+      <div class="header-left">
+        <img src="assets/elanadu_logo.png" alt="Elanadu Milk" class="header-elanadu-logo" />
+        <span class="header-client-title">Elanadu Milk Products</span>
       </div>
 
-      <div class="header-center-title">
-        <h1 class="hw3-main-title">HeatWatch</h1>
+      <div class="header-center">
+        <h1 class="header-system-title">HeatWatch</h1>
       </div>
 
-      <div class="header-right-controls">
-        <button id="btn-fullscreen" class="hw3-icon-btn" title="Fullscreen">
-          <i class="fa-solid fa-expand"></i>
+      <div class="header-right">
+        <!-- REQUIREMENT 3: VIEWS DROPDOWN MENU BUTTON -->
+        <div class="dropdown-wrapper">
+          <button id="btn-views-menu" class="btn-elanadu btn-nav-dropdown" title="Select View">
+            <i class="fa-solid fa-bars-staggered"></i> <span id="current-view-label">Dashboard</span> <i class="fa-solid fa-chevron-down caret-icon"></i>
+          </button>
+          
+          <div id="views-dropdown-menu" class="dropdown-menu-list">
+            <button class="dropdown-item active" data-tab="tab-telemetry">
+              <i class="fa-solid fa-gauge-high"></i> Dashboard Grid
+            </button>
+            <button class="dropdown-item" data-tab="tab-trends">
+              <i class="fa-solid fa-chart-line"></i> Realtime Trends
+            </button>
+            <button class="dropdown-item" data-tab="tab-history">
+              <i class="fa-solid fa-table-list"></i> Telemetry Logs
+            </button>
+            <button class="dropdown-item" data-tab="tab-diagnostics">
+              <i class="fa-solid fa-server"></i> System Diagnostics
+            </button>
+          </div>
+        </div>
+
+        <!-- REQUIREMENT 6: OPTIMIZED LIGHT/DARK MODE TOGGLE -->
+        <button id="btn-theme-toggle" class="btn-elanadu btn-icon-square" title="Toggle Light / Dark Mode">
+          <i class="fa-solid fa-sun" id="icon-theme-sun"></i>
+          <i class="fa-solid fa-moon" id="icon-theme-moon" style="display:none;"></i>
         </button>
-        <button id="btn-mute-alarm" class="hw3-icon-btn" title="Audio Mute">
+
+        <button id="btn-mute-alarm" class="btn-elanadu btn-icon-square" title="Mute Siren Audio">
           <i class="fa-solid fa-volume-high" id="icon-audio-on"></i>
           <i class="fa-solid fa-volume-xmark" id="icon-audio-off" style="display:none;"></i>
         </button>
-        <button id="btn-theme-toggle" class="hw3-icon-btn" title="Theme Mode">
-          <i class="fa-solid fa-moon" id="icon-theme-dark"></i>
-          <i class="fa-solid fa-sun" id="icon-theme-light" style="display:none;"></i>
-        </button>
-        <button id="btn-settings" class="hw3-icon-btn" title="Settings">
+
+        <!-- REQUIREMENT 3: SETTINGS IN NAVBAR -->
+        <button id="btn-settings" class="btn-elanadu btn-icon-square" title="Secure Plant Settings">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </header>
 
-    <!-- TAB SELECTOR BAR -->
-    <nav class="hw3-tab-selector-bar">
-      <button class="hw3-tab-btn active" data-tab="tab-telemetry">
-        <i class="fa-solid fa-border-all"></i> Dashboard
-      </button>
-      <button class="hw3-tab-btn" data-tab="tab-trends">
-        <i class="fa-solid fa-chart-line"></i> Realtime Trends
-      </button>
-      <button class="hw3-tab-btn" data-tab="tab-history">
-        <i class="fa-solid fa-clock-rotate-left"></i> Telemetry Logs
-      </button>
-      <button class="hw3-tab-btn" data-tab="tab-diagnostics">
-        <i class="fa-solid fa-server"></i> System Diagnostics
-      </button>
-    </nav>
+    <!-- SUB-BAR (ACTIVE VIEW INDICATOR, STATUS & CLOCK) -->
+    <div class="sub-status-bar">
+      <div class="view-indicator">
+        <span class="indicator-dot"></span>
+        <span id="active-view-name">Live Dashboard Grid</span>
+      </div>
 
-    <!-- VIEWPORT AREA -->
-    <main class="hw3-main-viewport">
+      <div class="sub-status-center">
+        <div id="global-status-pill" class="status-pill status-normal">
+          <span class="status-dot"></span>
+          <span id="global-status-text">SYSTEM NORMAL</span>
+        </div>
+      </div>
+
+      <div class="clock-display">
+        <i class="fa-regular fa-clock"></i>
+        <span id="live-time">12:00:00 AM</span>
+        <span class="clock-divider">•</span>
+        <span id="live-date">Sep 16, 2026</span>
+      </div>
+    </div>
+
+    <!-- MAIN VIEWPORT CONTENT -->
+    <main class="main-viewport-content">
       
-      <!-- SCREENSHOT 2: REAL-TIME TELEMETRY GRID (2 ROWS x 4 COLUMNS) -->
-      <section id="tab-telemetry" class="hw3-pane active">
-        <div id="sensor-grid" class="hw3-grid-2x4">
+      <!-- TAB 1: DASHBOARD GRID (COMPACT NO-SCROLL 8-CHANNEL GRID) -->
+      <section id="tab-telemetry" class="view-pane active">
+        <div id="sensor-grid" class="elanadu-grid-2x4">
           <!-- Dynamically populated 8 channel cards -->
         </div>
       </section>
 
-      <!-- SCREENSHOT 3: MULTI-CHANNEL REALTIME TRENDS -->
-      <section id="tab-trends" class="hw3-pane">
-        <div class="hw3-container-panel">
-          <div class="trends-top-row">
-            <h2 class="hw3-section-title">Multi-Channel Realtime Trends</h2>
-            <div class="trends-controls-right">
-              <select id="trends-rtd-select" class="hw3-select">
-                <option value="ALL">All Channels (Overlaid)</option>
-                <option value="CH1">CH1 (Pasteurizer Heating Zone)</option>
-                <option value="CH2">CH2 (Pasteurizer Holding Tube)</option>
-                <option value="CH3">CH3 (Pre-Chiller Milk Outlet)</option>
-                <option value="CH4">CH4 (Ice Bank Tank Water)</option>
-                <option value="CH5">CH5 (Raw Milk Silo 1)</option>
-                <option value="CH6">CH6 (Processed Milk Silo 2)</option>
-                <option value="CH7">CH7 (Cold Storage Room)</option>
-                <option value="CH8">CH8 (CIP Clean-In-Place)</option>
-              </select>
-
-              <div class="hw3-range-group">
-                <button class="hw3-btn-range active" data-hours="1">1 Hour</button>
-                <button class="hw3-btn-range" data-hours="6">6 Hours</button>
-                <button class="hw3-btn-range" data-hours="24">24 Hours</button>
-              </div>
-
-              <button id="btn-export-csv-trends" class="hw3-btn-action btn-green">
-                <i class="fa-solid fa-download"></i> Export CSV
-              </button>
-              <button id="btn-export-pdf-trends" class="hw3-btn-action btn-blue">
-                <i class="fa-solid fa-file-pdf"></i> Download PDF
-              </button>
-            </div>
-          </div>
-
-          <div class="hw3-chart-area">
-            <canvas id="trendChart"></canvas>
-          </div>
-
-          <div class="trends-bottom-row">
-            <h3>24-Hour Channel Summary</h3>
-            <button id="btn-refresh-trends" class="hw3-btn-pill">Refresh</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- SCREENSHOT 4: HISTORICAL TELEMETRY LOGS VIEW -->
-      <section id="tab-history" class="hw3-pane">
-        <div class="hw3-container-panel">
-          <div class="history-top-row">
-            <div class="history-controls-left">
-              <select id="history-rtd-select" class="hw3-select">
-                <option value="ALL">All Channels (CH1 - CH8)</option>
+      <!-- TAB 2: REALTIME TRENDS WITH CSV & PDF CHART EXPORTS -->
+      <section id="tab-trends" class="view-pane">
+        <div class="elanadu-panel-box">
+          <div class="panel-toolbar">
+            <h2 class="panel-title"><i class="fa-solid fa-chart-line"></i> Multi-Channel Thermal Trends</h2>
+            
+            <div class="toolbar-actions-group">
+              <select id="trends-rtd-select" class="elanadu-select">
+                <option value="ALL">All RTD Channels (Overlaid)</option>
                 <option value="CH1">CH1 — Pasteurizer Heating Zone</option>
                 <option value="CH2">CH2 — Pasteurizer Holding Tube</option>
                 <option value="CH3">CH3 — Pre-Chiller Milk Outlet</option>
                 <option value="CH4">CH4 — Ice Bank Tank Water</option>
-                <option value="CH5">CH5 — Raw Milk Silo 1</option>
+                <option value="CH5">CH5 — Raw Milk Storage Silo 1</option>
                 <option value="CH6">CH6 — Processed Milk Silo 2</option>
                 <option value="CH7">CH7 — Cold Storage Room</option>
-                <option value="CH8">CH8 — CIP Clean-In-Place</option>
+                <option value="CH8">CH8 — CIP Clean-In-Place Rinse</option>
               </select>
 
-              <select id="history-hours-select" class="hw3-select">
+              <div class="range-btn-group">
+                <button class="range-btn active" data-hours="1">1 Hour</button>
+                <button class="range-btn" data-hours="6">6 Hours</button>
+                <button class="range-btn" data-hours="24">24 Hours</button>
+                <button class="range-btn" data-hours="168">7 Days</button>
+              </div>
+
+              <button id="btn-export-csv-trends" class="btn-elanadu btn-action-csv">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+              </button>
+              
+              <!-- REQUIREMENT 4: PDF EXPORT WITH GOOSE BANNER & ELANADU LOGO & TRENDS CHART -->
+              <button id="btn-export-pdf-trends" class="btn-elanadu btn-action-pdf">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+              </button>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- REQUIREMENT 5: STANDARDIZED TELEMETRY LOGS TAB -->
+      <section id="tab-history" class="view-pane">
+        <div class="elanadu-panel-box">
+          <div class="panel-toolbar">
+            <div class="toolbar-left-inputs">
+              <select id="history-rtd-select" class="elanadu-select">
+                <option value="ALL">All RTD Channels (CH1 - CH8)</option>
+                <option value="CH1">CH1 — Pasteurizer Heating Zone</option>
+                <option value="CH2">CH2 — Pasteurizer Holding Tube</option>
+                <option value="CH3">CH3 — Pre-Chiller Milk Outlet</option>
+                <option value="CH4">CH4 — Ice Bank Tank Water</option>
+                <option value="CH5">CH5 — Raw Milk Storage Silo 1</option>
+                <option value="CH6">CH6 — Processed Milk Silo 2</option>
+                <option value="CH7">CH7 — Cold Storage Room</option>
+                <option value="CH8">CH8 — CIP Clean-In-Place Rinse</option>
+              </select>
+
+              <select id="history-hours-select" class="elanadu-select">
                 <option value="1">Last 1 Hour</option>
                 <option value="6">Last 6 Hours</option>
                 <option value="24" selected>Last 24 Hours</option>
                 <option value="168">Last 7 Days</option>
               </select>
 
-              <button id="btn-query-logs" class="hw3-btn-action btn-blue">Query Logs</button>
+              <button id="btn-query-logs" class="btn-elanadu btn-primary-blue">
+                <i class="fa-solid fa-magnifying-glass"></i> Query Logs
+              </button>
             </div>
 
-            <div class="history-controls-right">
-              <button id="btn-export-csv-history" class="hw3-btn-pill">CSV</button>
-              <button id="btn-export-excel-history" class="hw3-btn-pill">Excel</button>
-              <button id="btn-export-pdf-history" class="hw3-btn-pill">PDF</button>
+            <div class="toolbar-right-exports">
+              <button id="btn-export-csv-history" class="btn-elanadu btn-secondary-slate">
+                <i class="fa-solid fa-file-csv"></i> CSV
+              </button>
+              
+              <!-- REQUIREMENT 4: PDF EXPORT WITH GOOSE BANNER & ELANADU LOGO -->
+              <button id="btn-export-pdf-history" class="btn-elanadu btn-secondary-slate">
+                <i class="fa-solid fa-file-pdf"></i> PDF Audit
+              </button>
             </div>
           </div>
 
-          <div class="hw3-table-wrapper">
-            <table class="hw3-data-table">
+          <div class="standard-table-wrapper">
+            <table class="elanadu-standard-table">
               <thead>
                 <tr>
                   <th>TIMESTAMP</th>
-                  <th>CHANNEL</th>
-                  <th>TEMPERATURE</th>
-                  <th>STATUS</th>
+                  <th>RTD CHANNEL</th>
+                  <th>PROCESS DESCRIPTION</th>
+                  <th>TEMPERATURE (°C)</th>
+                  <th>TARGET (°C)</th>
+                  <th>OPERATIONAL STATUS</th>
                 </tr>
               </thead>
               <tbody id="history-table-body">
-                <!-- Log entries -->
+                <!-- Data populated dynamically -->
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- SCREENSHOT 5: SYSTEM DIAGNOSTICS & RESOURCE MONITOR -->
-      <section id="tab-diagnostics" class="hw3-pane">
-        <!-- 4 Top Metric Cards -->
-        <div class="diag-top-cards-row">
-          <div class="diag-metric-card">
-            <span class="diag-metric-title">CPU LOAD</span>
-            <span id="diag-cpu-load" class="diag-metric-val">30%</span>
+      <!-- TAB 4: SYSTEM DIAGNOSTICS & RESOURCE MONITOR -->
+      <section id="tab-diagnostics" class="view-pane">
+        <div class="diag-metrics-row">
+          <div class="diag-card-box">
+            <span class="diag-card-label">CPU LOAD</span>
+            <span id="diag-cpu-load" class="diag-card-number">--%</span>
           </div>
 
-          <div class="diag-metric-card">
-            <span class="diag-metric-title">CPU TEMP</span>
-            <span id="diag-cpu-temp" class="diag-metric-val">--</span>
+          <div class="diag-card-box">
+            <span class="diag-card-label">CORE CPU TEMP</span>
+            <span id="diag-cpu-temp" class="diag-card-number">-- °C</span>
           </div>
 
-          <div class="diag-metric-card">
-            <span class="diag-metric-title">RAM MEMORY</span>
-            <span id="diag-ram-usage" class="diag-metric-val">--MB / --MB</span>
+          <div class="diag-card-box">
+            <span class="diag-card-label">RAM MEMORY</span>
+            <span id="diag-ram-usage" class="diag-card-number">-- / -- MB</span>
           </div>
 
-          <div class="diag-metric-card">
-            <span class="diag-metric-title">STORAGE DISK</span>
-            <span id="diag-disk-usage" class="diag-metric-val">--Gi (--%)</span>
+          <div class="diag-card-box">
+            <span class="diag-card-label">STORAGE DISK</span>
+            <span id="diag-disk-usage" class="diag-card-number">--Gi (--%)</span>
           </div>
         </div>
 
-        <!-- Bottom System Diagnostics Container -->
-        <div class="hw3-container-panel diag-bottom-panel">
-          <h2 class="hw3-section-title">System Diagnostics</h2>
-          <div class="diag-details-grid">
-            <div class="diag-col">
-              <div class="diag-entry-row">
-                <span class="diag-entry-key">Hardware System:</span>
-                <span id="diag-hostname" class="diag-entry-val">heatwatch.local (arm64)</span>
+        <div class="elanadu-panel-box diag-details-panel">
+          <h3 class="panel-title"><i class="fa-solid fa-server"></i> System Infrastructure & Daemon Diagnostics</h3>
+          
+          <div class="diag-grid-rows">
+            <div class="diag-col-box">
+              <div class="diag-row-item">
+                <span class="diag-key">Host Machine:</span>
+                <span id="diag-hostname" class="diag-val">heatwatch.local (arm64)</span>
               </div>
-              <div class="diag-entry-row">
-                <span class="diag-entry-key">InfluxDB Data Size:</span>
-                <span class="diag-entry-val">42 MB</span>
+              <div class="diag-row-item">
+                <span class="diag-key">InfluxDB Storage Size:</span>
+                <span class="diag-val">42.5 MB</span>
               </div>
             </div>
 
-            <div class="diag-col">
-              <div class="diag-entry-row">
-                <span class="diag-entry-key">System Uptime:</span>
-                <span id="diag-uptime" class="diag-entry-val">738h 11m</span>
+            <div class="diag-col-box">
+              <div class="diag-row-item">
+                <span class="diag-key">System Uptime:</span>
+                <span id="diag-uptime" class="diag-val">738h 11m</span>
               </div>
-              <div class="diag-entry-row">
-                <span class="diag-entry-key">Hardware Interface:</span>
-                <span class="diag-entry-val font-cyan">PPI AIME 8U</span>
-                <span id="ppi-status-badge" class="pill-ppi-status online">• PPI Online</span>
+              <div class="diag-row-item">
+                <span class="diag-key">Hardware Module:</span>
+                <span class="diag-val font-yellow">PPI AIME 8U</span>
+                <span id="ppi-status-pill" class="pill-online">• ONLINE</span>
               </div>
             </div>
           </div>
@@ -249,41 +285,41 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="hw3-footer">
+    <footer class="app-footer-elanadu">
       <span>HeatWatch 4 Telemetry Console • <strong>Elanadu Milk Products</strong></span>
       <span>Powered by <strong>Goose Industrial Solutions</strong></span>
     </footer>
   </div>
 
-  <!-- MODALS -->
-  <div id="modal-auth" class="hw3-modal-overlay">
-    <div class="hw3-modal-box modal-small">
-      <div class="hw3-modal-header">
-        <h3><i class="fa-solid fa-lock"></i> Admin Password</h3>
-        <button class="hw3-modal-close">&times;</button>
+  <!-- AUTH & SETTINGS MODALS -->
+  <div id="modal-auth" class="modal-backdrop">
+    <div class="modal-card-elanadu modal-small">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-shield-halved"></i> Admin Password Required</h3>
+        <button class="modal-close-btn">&times;</button>
       </div>
-      <div class="hw3-modal-body">
-        <p class="text-subtle">Enter administrator password to access plant settings:</p>
-        <input type="password" id="auth-password" class="hw3-input" placeholder="Password..." />
-        <div id="auth-error-msg" class="text-error" style="display:none;">Invalid password</div>
-        <button id="btn-submit-auth" class="hw3-btn-action btn-blue w-full margin-top">Authenticate</button>
+      <div class="modal-body">
+        <p class="subtle-text">Enter plant administrator password to unlock settings:</p>
+        <input type="password" id="auth-password" class="elanadu-input" placeholder="Enter Password..." />
+        <div id="auth-error-msg" class="error-msg-text" style="display:none;">Invalid password</div>
+        <button id="btn-submit-auth" class="btn-elanadu btn-primary-blue w-full margin-t">Authenticate</button>
       </div>
     </div>
   </div>
 
-  <div id="modal-settings" class="hw3-modal-overlay">
-    <div class="hw3-modal-box modal-large">
-      <div class="hw3-modal-header">
-        <h3><i class="fa-solid fa-sliders"></i> Sensor Configuration & Threshold Limits</h3>
-        <button class="hw3-modal-close">&times;</button>
+  <div id="modal-settings" class="modal-backdrop">
+    <div class="modal-card-elanadu modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-sliders"></i> Plant Sensor Configuration & Alarm Limits</h3>
+        <button class="modal-close-btn">&times;</button>
       </div>
-      <div class="hw3-modal-body">
-        <div class="settings-scroll-table">
-          <table class="hw3-data-table">
+      <div class="modal-body">
+        <div class="settings-table-wrapper">
+          <table class="elanadu-standard-table">
             <thead>
               <tr>
                 <th>CH</th>
-                <th>Process Label</th>
+                <th>Process Description</th>
                 <th>LoLo (°C)</th>
                 <th>Lo (°C)</th>
                 <th>Target (°C)</th>
@@ -293,15 +329,15 @@
               </tr>
             </thead>
             <tbody id="settings-sensors-table">
-              <!-- Populated dynamically -->
+              <!-- Dynamically populated -->
             </tbody>
           </table>
         </div>
-        <div class="hw3-modal-footer">
-          <button id="btn-reset-factory" class="hw3-btn-pill">Reset Defaults</button>
-          <div class="flex-gap">
-            <button class="hw3-btn-pill hw3-modal-close">Cancel</button>
-            <button id="btn-save-settings" class="hw3-btn-action btn-blue">Save Configuration</button>
+        <div class="modal-footer-flex">
+          <button id="btn-reset-factory" class="btn-elanadu btn-secondary-slate">Reset Defaults</button>
+          <div class="gap-flex">
+            <button class="btn-elanadu btn-secondary-slate modal-close-btn">Cancel</button>
+            <button id="btn-save-settings" class="btn-elanadu btn-primary-blue">Save Configuration</button>
           </div>
         </div>
       </div>

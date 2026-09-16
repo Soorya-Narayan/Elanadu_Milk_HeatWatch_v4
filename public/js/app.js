@@ -1,6 +1,6 @@
 /**
  * HeatWatch 4 — Elanadu Milk Edition
- * HeatWatch 3 Reference Matching Frontend Application
+ * Client Application, Dropdown Navigation & Base64 PDF Exporter
  * Author: Goose Industrial Solutions
  */
 
@@ -14,16 +14,52 @@ document.addEventListener('DOMContentLoaded', () => {
   let rawHistoryData = [];
   let isAudioMuted = false;
 
+  // Preload Base64 Image Assets for PDF Export
+  let elanaduLogoBase64 = null;
+  let gooseBannerBase64 = null;
+
+  async function preloadPdfAssets() {
+    elanaduLogoBase64 = await toBase64('assets/elanadu_logo.png');
+    gooseBannerBase64 = await toBase64('assets/goose_banner.png');
+  }
+
+  function toBase64(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  }
+  preloadPdfAssets();
+
   // DOM Elements
   const splashScreen = document.getElementById('splash-screen');
   const splashProgressBar = document.getElementById('splash-progress-bar');
+  const btnViewsMenu = document.getElementById('btn-views-menu');
+  const viewsDropdownMenu = document.getElementById('views-dropdown-menu');
+  const currentViewLabel = document.getElementById('current-view-label');
+  const activeViewName = document.getElementById('active-view-name');
+  
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
-  const iconThemeDark = document.getElementById('icon-theme-dark');
-  const iconThemeLight = document.getElementById('icon-theme-light');
-  const btnFullscreen = document.getElementById('btn-fullscreen');
+  const iconThemeSun = document.getElementById('icon-theme-sun');
+  const iconThemeMoon = document.getElementById('icon-theme-moon');
   const btnMuteAlarm = document.getElementById('btn-mute-alarm');
   const iconAudioOn = document.getElementById('icon-audio-on');
   const iconAudioOff = document.getElementById('icon-audio-off');
+  
+  const elGlobalPill = document.getElementById('global-status-pill');
+  const elGlobalText = document.getElementById('global-status-text');
+  const elLiveTime = document.getElementById('live-time');
+  const elLiveDate = document.getElementById('live-date');
   const elSensorGrid = document.getElementById('sensor-grid');
   const elAlarmAudio = document.getElementById('alarm-audio');
 
@@ -31,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalAuth = document.getElementById('modal-auth');
   const modalSettings = document.getElementById('modal-settings');
 
-  // --- 1. SPLASH LOADING SCREEN ---
+  // --- REQUIREMENT 1: SPLASH LOADING SCREEN ---
   let progress = 0;
   const progressInterval = setInterval(() => {
     progress += 25;
@@ -44,16 +80,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 100);
 
-  // --- 2. FULLSCREEN TOGGLE ---
-  btnFullscreen.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-    }
+  // --- REQUIREMENT 3: VIEWS DROPDOWN MENU HANDLER ---
+  btnViewsMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+    viewsDropdownMenu.classList.toggle('show');
   });
 
-  // --- 3. AUDIO MUTE TOGGLE ---
+  document.addEventListener('click', () => {
+    viewsDropdownMenu.classList.remove('show');
+  });
+
+  document.querySelectorAll('.dropdown-item').forEach((item) => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.view-pane').forEach(p => p.classList.remove('active'));
+
+      item.classList.add('active');
+      const targetTab = item.getAttribute('data-tab');
+      document.getElementById(targetTab).classList.add('active');
+
+      const viewText = item.textContent.trim();
+      currentViewLabel.textContent = viewText.replace(/^[^\w]+/, '');
+      activeViewName.textContent = viewText;
+
+      viewsDropdownMenu.classList.remove('show');
+
+      if (targetTab === 'tab-history') {
+        fetchHistoricalLogs();
+      } else if (targetTab === 'tab-trends') {
+        fetchHistoricalTrends(currentRangeHours);
+      } else if (targetTab === 'tab-diagnostics') {
+        fetchDiagnostics();
+      }
+    });
+  });
+
+  // --- REQUIREMENT 6: OPTIMIZED LIGHT & DARK THEME SWITCHER ---
+  const savedTheme = localStorage.getItem('heatwatch_theme') || 'theme-dark';
+  applyTheme(savedTheme);
+
+  btnThemeToggle.addEventListener('click', () => {
+    const newTheme = document.body.classList.contains('theme-dark') ? 'theme-light' : 'theme-dark';
+    applyTheme(newTheme);
+  });
+
+  function applyTheme(theme) {
+    document.body.className = theme;
+    localStorage.setItem('heatwatch_theme', theme);
+
+    if (theme === 'theme-light') {
+      iconThemeSun.style.display = 'none';
+      iconThemeMoon.style.display = 'inline-block';
+    } else {
+      iconThemeSun.style.display = 'inline-block';
+      iconThemeMoon.style.display = 'none';
+    }
+  }
+
+  // --- AUDIO MUTE TOGGLE ---
   btnMuteAlarm.addEventListener('click', async () => {
     isAudioMuted = !isAudioMuted;
     if (isAudioMuted) {
@@ -74,29 +158,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {}
   });
 
-  // --- 4. LIGHT & DARK THEME SWITCHER ---
-  const savedTheme = localStorage.getItem('heatwatch_theme') || 'theme-dark';
-  applyTheme(savedTheme);
-
-  btnThemeToggle.addEventListener('click', () => {
-    const newTheme = document.body.classList.contains('theme-dark') ? 'theme-light' : 'theme-dark';
-    applyTheme(newTheme);
-  });
-
-  function applyTheme(theme) {
-    document.body.className = theme;
-    localStorage.setItem('heatwatch_theme', theme);
-
-    if (theme === 'theme-light') {
-      iconThemeDark.style.display = 'none';
-      iconThemeLight.style.display = 'inline-block';
-    } else {
-      iconThemeDark.style.display = 'inline-block';
-      iconThemeLight.style.display = 'none';
-    }
+  // --- CLOCK WIDGET ---
+  function updateClock() {
+    const now = new Date();
+    elLiveTime.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    elLiveDate.textContent = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
   }
+  setInterval(updateClock, 1000);
+  updateClock();
 
-  // --- IMMEDIATE INITIAL REST FETCH ---
+  // --- IMMEDIATE LIVE REST FETCH ---
   async function fetchImmediateLiveTelemetry() {
     try {
       const resp = await fetch('/api/telemetry/live');
@@ -106,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTelemetry(json.data, json.muted);
       }
     } catch (err) {
-      console.error('Error fetching immediate live telemetry:', err);
+      console.error('Error fetching live telemetry:', err);
     }
   }
 
@@ -117,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     ws = new WebSocket(wsUrl);
 
-    ws.onopen = () => console.log('[WebSocket] Connected to HeatWatch server');
+    ws.onopen = () => console.log('[WebSocket] Connected');
 
     ws.onmessage = (event) => {
       try {
@@ -137,6 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- REAL-TIME 8-CHANNEL TELEMETRY GRID RENDERER ---
   function renderTelemetry(data, isMuted) {
     if (!data) return;
+
+    const systemStatus = data.systemStatus || 'NORMAL';
+    elGlobalPill.className = `status-pill status-${systemStatus.toLowerCase()}`;
+    elGlobalText.textContent = `SYSTEM ${systemStatus}`;
 
     const channels = data.channels || [];
     elSensorGrid.innerHTML = '';
@@ -161,27 +236,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const percent = Math.min(100, Math.max(0, ((ch.value - minVal) / (maxVal - minVal)) * 100));
 
       const cardHtml = `
-        <div class="hw3-card-v3">
-          <div class="hw3-card-header">
-            <span class="hw3-badge-ch">${ch.id}</span>
-            <span class="hw3-pill-status ${pillClass}">${pillText}</span>
+        <div class="elanadu-card">
+          <div class="card-top-row">
+            <span class="ch-badge-elanadu">${ch.id}</span>
+            <span class="ch-status-pill ${pillClass}">${pillText}</span>
           </div>
 
-          <div class="hw3-process-name">${ch.label}</div>
+          <div class="ch-label-title">${ch.label}</div>
 
-          <div class="hw3-temp-display">
-            <span class="hw3-temp-num">${tempStr}</span>
-            <span class="hw3-temp-unit">${ch.unit || '°C'}</span>
+          <div class="ch-temp-row">
+            <span class="ch-temp-big">${tempStr}</span>
+            <span class="ch-temp-unit">${ch.unit || '°C'}</span>
           </div>
 
-          <div class="hw3-line-divider">
-            <div style="width:${percent}%; height:100%; background:var(--color-cyan);"></div>
+          <div class="ch-divider-line">
+            <div class="ch-divider-fill" style="width:${percent}%;"></div>
           </div>
 
-          <div class="hw3-card-footer">
+          <div class="ch-bottom-meta">
             <span>Lo: ${ch.lo}°C | Hi: ${ch.hi}°C</span>
             <span>HiHi: ${ch.hihi}°C</span>
-            <span class="hw3-just-now">Just now</span>
           </div>
         </div>
       `;
@@ -189,34 +263,14 @@ document.addEventListener('DOMContentLoaded', () => {
       elSensorGrid.insertAdjacentHTML('beforeend', cardHtml);
     });
 
-    if (data.systemStatus === 'CRITICAL' && !isMuted && !isAudioMuted) {
+    if (systemStatus === 'CRITICAL' && !isMuted && !isAudioMuted) {
       elAlarmAudio.play().catch(() => {});
     } else {
       elAlarmAudio.pause();
     }
   }
 
-  // --- SUBNAV TABS SWITCHING ---
-  document.querySelectorAll('.hw3-tab-btn').forEach((tabBtn) => {
-    tabBtn.addEventListener('click', () => {
-      document.querySelectorAll('.hw3-tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.hw3-pane').forEach(p => p.classList.remove('active'));
-
-      tabBtn.classList.add('active');
-      const targetTab = tabBtn.getAttribute('data-tab');
-      document.getElementById(targetTab).classList.add('active');
-
-      if (targetTab === 'tab-history') {
-        fetchHistoricalLogs();
-      } else if (targetTab === 'tab-trends') {
-        fetchHistoricalTrends(currentRangeHours);
-      } else if (targetTab === 'tab-diagnostics') {
-        fetchDiagnostics();
-      }
-    });
-  });
-
-  // --- HISTORICAL LOGS QUERY & EXPORTS ---
+  // --- REQUIREMENT 5: STANDARDIZED TELEMETRY LOGS QUERY & RENDERER ---
   async function fetchHistoricalLogs() {
     const hours = document.getElementById('history-hours-select').value;
     const rtdFilter = document.getElementById('history-rtd-select').value;
@@ -237,12 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
 
     if (!data || !data.length) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:50px; color:#525c6e;">No telemetry log records found for selected time range.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">No telemetry log records found for selected time range.</td></tr>`;
       return;
     }
 
     data.forEach((row) => {
-      const timeStr = new Date(row.timestamp).toLocaleTimeString();
+      const timeStr = new Date(row.timestamp).toLocaleString();
 
       sensors.forEach((s) => {
         if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
@@ -251,9 +305,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const trHtml = `
           <tr>
             <td><strong>${timeStr}</strong></td>
-            <td><span class="hw3-badge-ch">${s.id}</span> ${s.label}</td>
+            <td><span class="ch-badge-elanadu">${s.id}</span></td>
+            <td><strong>${s.label}</strong></td>
             <td><strong>${val !== undefined ? val.toFixed(1) : '--'} °C</strong></td>
-            <td><span class="hw3-pill-status online">• ONLINE</span></td>
+            <td>${s.target || 25.0} °C</td>
+            <td><span class="ch-status-pill online">• ONLINE</span></td>
           </tr>
         `;
         tbody.insertAdjacentHTML('beforeend', trHtml);
@@ -265,12 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('history-rtd-select').addEventListener('change', fetchHistoricalLogs);
   document.getElementById('history-hours-select').addEventListener('change', fetchHistoricalLogs);
 
-  // CSV Export
+  // CSV Export for Logs
   document.getElementById('btn-export-csv-history').addEventListener('click', () => {
     const rtdFilter = document.getElementById('history-rtd-select').value;
     if (!rawHistoryData.length) return alert('No historical data available to export.');
 
-    let csvContent = 'data:text/csv;charset=utf-8,Timestamp,Channel_ID,Sensor_Label,Temperature_C,Status\n';
+    let csvContent = 'data:text/csv;charset=utf-8,Timestamp,RTD_Channel,Process_Description,Temperature_C,Target_C,Status\n';
 
     rawHistoryData.forEach((row) => {
       const timeStr = new Date(row.timestamp).toISOString();
@@ -279,23 +335,19 @@ document.addEventListener('DOMContentLoaded', () => {
       sensors.forEach((s) => {
         if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
         const val = row[s.id];
-        csvContent += `"${timeStr}","${s.id}","${s.label}",${val || ''},"ONLINE"\n`;
+        csvContent += `"${timeStr}","${s.id}","${s.label}",${val || ''},${s.target || 25.0},"ONLINE"\n`;
       });
     });
 
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', `HeatWatch_History_${rtdFilter}_${Date.now()}.csv`);
+    link.setAttribute('download', `Elanadu_HeatWatch_Logs_${rtdFilter}_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   });
 
-  document.getElementById('btn-export-excel-history').addEventListener('click', () => {
-    document.getElementById('btn-export-csv-history').click();
-  });
-
-  // PDF Report Export
+  // REQUIREMENT 4: PDF REPORT EXPORT FOR LOGS (WITH ELANADU LOGO & GOOSE BANNER)
   document.getElementById('btn-export-pdf-history').addEventListener('click', () => {
     const rtdFilter = document.getElementById('history-rtd-select').value;
     if (!rawHistoryData.length) return alert('No historical data available to export.');
@@ -303,13 +355,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    doc.setFontSize(16);
-    doc.setTextColor(0, 229, 255);
-    doc.text('HeatWatch 4 — Elanadu Milk Products Audit Log', 14, 18);
+    // Embed Logos in PDF Header
+    if (elanaduLogoBase64) {
+      doc.addImage(elanaduLogoBase64, 'PNG', 14, 10, 35, 22);
+    }
+    if (gooseBannerBase64) {
+      doc.addImage(gooseBannerBase64, 'JPEG', 140, 12, 55, 18);
+    }
 
-    doc.setFontSize(10);
-    doc.setTextColor(150);
-    doc.text(`Telemetry Audit Report | Filter: ${rtdFilter} | Date: ${new Date().toLocaleString()}`, 14, 25);
+    doc.setFontSize(16);
+    doc.setTextColor(0, 71, 171);
+    doc.text('Elanadu Milk Products — Telemetry Audit Report', 52, 20);
+
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`HeatWatch 4 Telemetry Console | Filter: ${rtdFilter} | Generated: ${new Date().toLocaleString()}`, 52, 27);
+
+    doc.setDrawColor(200);
+    doc.line(14, 36, 196, 36);
 
     const tableRows = [];
     const sensors = latestTelemetryData ? latestTelemetryData.channels : [];
@@ -319,23 +382,23 @@ document.addEventListener('DOMContentLoaded', () => {
       sensors.forEach((s) => {
         if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
         const val = row[s.id];
-        tableRows.push([timeStr, s.id, s.label, `${val !== undefined ? val.toFixed(1) : '--'} °C`, 'ONLINE']);
+        tableRows.push([timeStr, s.id, s.label, `${val !== undefined ? val.toFixed(1) : '--'} °C`, `${s.target || 25.0} °C`, 'ONLINE']);
       });
     });
 
     doc.autoTable({
-      startY: 30,
-      head: [['Timestamp', 'RTD', 'Process Description', 'Temperature', 'Status']],
+      startY: 40,
+      head: [['Timestamp', 'RTD', 'Process Description', 'Temperature', 'Target', 'Status']],
       body: tableRows,
-      headStyles: { fillColor: [14, 17, 26] },
+      headStyles: { fillColor: [0, 71, 171] },
       styles: { fontSize: 8 }
     });
 
-    doc.save(`HeatWatch_Audit_Report_${rtdFilter}_${Date.now()}.pdf`);
+    doc.save(`Elanadu_HeatWatch_Audit_Report_${rtdFilter}_${Date.now()}.pdf`);
   });
 
-  // --- MULTI-CHANNEL REALTIME TRENDS CHART ---
-  const CHANNEL_COLORS = ['#2979ff', '#00e5ff', '#00c853', '#ffc400', '#ff1744', '#ab47bc', '#ff7043', '#78909c'];
+  // --- REALTIME TRENDS CHART & EXPORTS ---
+  const CHANNEL_COLORS = ['#0066cc', '#ffb800', '#00e676', '#ff1744', '#ab47bc', '#26c6da', '#ff7043', '#78909c'];
 
   function initChart() {
     const ctx = document.getElementById('trendChart').getContext('2d');
@@ -346,11 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', labels: { color: '#8e9bb0', font: { family: 'Inter', size: 11 } } }
+          legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } }
         },
         scales: {
-          x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#596579' } },
-          y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#596579' }, title: { display: true, text: 'Temperature (°C)', color: '#8e9bb0' } }
+          x: { grid: { color: 'rgba(125, 125, 125, 0.1)' } },
+          y: { grid: { color: 'rgba(125, 125, 125, 0.1)' }, title: { display: true, text: 'Temperature (°C)' } }
         }
       }
     });
@@ -386,9 +449,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('trends-rtd-select').addEventListener('change', () => fetchHistoricalTrends(currentRangeHours));
 
-  document.querySelectorAll('.hw3-btn-range').forEach(btn => {
+  document.querySelectorAll('.range-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.hw3-btn-range').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentRangeHours = parseInt(btn.getAttribute('data-hours'), 10);
       fetchHistoricalTrends(currentRangeHours);
@@ -406,29 +469,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', `HeatWatch_Trends_${Date.now()}.csv`);
+    link.setAttribute('download', `Elanadu_HeatWatch_Trends_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   });
 
-  // Download Trends PDF
+  // REQUIREMENT 4: PDF REPORT EXPORT FOR TRENDS (WITH GOOSE BANNER, ELANADU LOGO & TRENDS CHART)
   document.getElementById('btn-export-pdf-trends').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('landscape');
 
-    doc.setFontSize(16);
-    doc.setTextColor(0, 229, 255);
-    doc.text('HeatWatch 4 — Multi-Channel Trends Graph Report', 14, 18);
+    // Embed Header Logos
+    if (elanaduLogoBase64) {
+      doc.addImage(elanaduLogoBase64, 'PNG', 14, 10, 40, 25);
+    }
+    if (gooseBannerBase64) {
+      doc.addImage(gooseBannerBase64, 'JPEG', 220, 12, 60, 20);
+    }
 
+    doc.setFontSize(18);
+    doc.setTextColor(0, 71, 171);
+    doc.text('Elanadu Milk Products — Realtime Thermal Trends Graph', 60, 22);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`HeatWatch 4 Telemetry Console | Range: Last ${currentRangeHours} Hours | Generated: ${new Date().toLocaleString()}`, 60, 30);
+
+    doc.setDrawColor(200);
+    doc.line(14, 38, 282, 38);
+
+    // Embed High-Res Chart Image
     const canvas = document.getElementById('trendChart');
     const imgData = canvas.toDataURL('image/png');
-    doc.addImage(imgData, 'PNG', 14, 28, 270, 150);
+    doc.addImage(imgData, 'PNG', 14, 42, 268, 145);
 
-    doc.save(`HeatWatch_Trend_Graph_${Date.now()}.pdf`);
+    doc.save(`Elanadu_HeatWatch_Trends_Graph_${currentRangeHours}h_${Date.now()}.pdf`);
   });
 
-  // --- SYSTEM DIAGNOSTICS QUERY ---
+  // --- SYSTEM DIAGNOSTICS ---
   async function fetchDiagnostics() {
     try {
       const resp = await fetch('/api/system');
@@ -443,11 +522,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const mins = Math.floor((diag.uptimeSeconds % 3600) / 60);
       document.getElementById('diag-uptime').textContent = `${hours}h ${mins}m`;
     } catch (err) {
-      console.error('Error fetching system diagnostics:', err);
+      console.error('Error fetching diagnostics:', err);
     }
   }
 
-  // --- SECURE SETTINGS CONTROL PANEL ---
+  // --- SECURE SETTINGS ---
   document.getElementById('btn-settings').addEventListener('click', () => {
     if (isAuthenticated) {
       openSettingsModal();
@@ -497,13 +576,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const trHtml = `
         <tr>
           <td><strong>${s.id}</strong></td>
-          <td><input type="text" data-id="${s.id}" data-field="label" value="${s.label}" class="hw3-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lolo" value="${s.lolo}" class="hw3-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lo" value="${s.lo}" class="hw3-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="target" value="${s.target}" class="hw3-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hi" value="${s.hi}" class="hw3-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hihi" value="${s.hihi}" class="hw3-input"></td>
-          <td><input type="number" step="0.1" data-id="${s.id}" data-field="offset" value="${s.offset || 0}" class="hw3-input"></td>
+          <td><input type="text" data-id="${s.id}" data-field="label" value="${s.label}" class="elanadu-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lolo" value="${s.lolo}" class="elanadu-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="lo" value="${s.lo}" class="elanadu-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="target" value="${s.target}" class="elanadu-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hi" value="${s.hi}" class="elanadu-input"></td>
+          <td><input type="number" step="0.5" data-id="${s.id}" data-field="hihi" value="${s.hihi}" class="elanadu-input"></td>
+          <td><input type="number" step="0.1" data-id="${s.id}" data-field="offset" value="${s.offset || 0}" class="elanadu-input"></td>
         </tr>
       `;
       tbody.insertAdjacentHTML('beforeend', trHtml);
@@ -539,13 +618,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Close Modals
-  document.querySelectorAll('.hw3-modal-close').forEach(btn => {
+  document.querySelectorAll('.modal-close-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.hw3-modal-overlay').forEach(m => m.classList.remove('active'));
+      document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
     });
   });
 
-  // Execute Immediate REST fetch & Start WebSocket
   fetchImmediateLiveTelemetry();
   initWebSocket();
 });

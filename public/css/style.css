@@ -1,52 +1,67 @@
 /* ==========================================================================
-   HeatWatch 4 — Elanadu Milk Edition
-   Exact HeatWatch Version 3 UI Stylesheet
+   HeatWatch 4 — Elanadu Milk Edition Theme & Styling System
+   Color Palette Inspired by Elanadu Milk Logo:
+   - Deep Royal Navy Blue (#0047AB / #003380 / #051C42)
+   - Golden Sun Yellow (#FFB800 / #FFC700)
+   - Pure Dairy White (#FFFFFF)
    ========================================================================== */
 
-/* DARK MODE VARS (Exact match to HeatWatch 3 screenshots) */
+/* --- DARK MODE THEME --- */
 body.theme-dark {
-  --bg-app: #050608;
-  --bg-header: #0b0d14;
-  --bg-panel: #0c0e15;
-  --bg-card: #0e111a;
-  --bg-btn: #141824;
-  --bg-btn-hover: #1f2538;
+  --bg-app: #040a17;
+  --bg-header: #07132a;
+  --bg-subnav: #091938;
+  --bg-panel: #0a1b3d;
+  --bg-card: #0c2047;
+  --bg-card-hover: #102756;
+  --bg-btn: #0e244f;
+  --bg-btn-hover: #16326b;
 
-  --border-app: #1a1f2e;
-  --border-subtle: #252b3d;
+  --border-app: rgba(0, 102, 204, 0.3);
+  --border-subtle: rgba(0, 102, 204, 0.18);
 
   --text-main: #ffffff;
-  --text-muted: #8e9bb0;
-  --text-subtle: #596579;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
 
-  --color-cyan: #00e5ff;
-  --color-blue: #2979ff;
-  --color-green: #00c853;
-  --color-warning: #ffc400;
+  --elanadu-blue: #0066cc;
+  --elanadu-blue-glow: rgba(0, 102, 204, 0.4);
+  --elanadu-yellow: #ffb800;
+  --elanadu-yellow-glow: rgba(255, 184, 0, 0.35);
+
+  --color-green: #00e676;
+  --color-warning: #ffb800;
   --color-critical: #ff1744;
+  --color-lolo: #29b6f6;
 }
 
-/* LIGHT MODE VARS */
+/* --- LIGHT MODE THEME --- */
 body.theme-light {
-  --bg-app: #eef2f7;
+  --bg-app: #edf3fa;
   --bg-header: #ffffff;
+  --bg-subnav: #e2ebf6;
   --bg-panel: #ffffff;
-  --bg-card: #f8fafc;
-  --bg-btn: #e2e8f0;
-  --bg-btn-hover: #cbd5e1;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f8fd;
+  --bg-btn: #e2eaf5;
+  --bg-btn-hover: #cbd9ed;
 
-  --border-app: #cbd5e1;
-  --border-subtle: #e2e8f0;
+  --border-app: rgba(0, 71, 171, 0.2);
+  --border-subtle: rgba(0, 71, 171, 0.1);
 
   --text-main: #0f172a;
   --text-muted: #475569;
-  --text-subtle: #94a3b8;
+  --text-subtle: #64748b;
 
-  --color-cyan: #0088cc;
-  --color-blue: #0052cc;
+  --elanadu-blue: #0047ab;
+  --elanadu-blue-glow: rgba(0, 71, 171, 0.2);
+  --elanadu-yellow: #d99b00;
+  --elanadu-yellow-glow: rgba(217, 155, 0, 0.2);
+
   --color-green: #00a854;
   --color-warning: #d99b00;
   --color-critical: #d50000;
+  --color-lolo: #0288d1;
 }
 
 * {
@@ -65,222 +80,332 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-.app-shell-hw3 {
+.app-shell {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
 /* ==========================================================================
-   SCREENSHOT 1: SPLASH LOADING SCREEN
+   REQUIREMENT 1: SPLASH LOADING SCREEN
+   Only Elanadu Logo, progress bar, tagline "Powered by Goose Industrial Solutions"
+   No HeatWatch4 text, No Goose logo
    ========================================================================== */
-.splash-screen-hw3 {
+.splash-overlay-elanadu {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: #000000;
+  background: radial-gradient(circle at center, #071738 0%, #030a1a 100%);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-.splash-screen-hw3.fade-out {
+.splash-overlay-elanadu.fade-out {
   opacity: 0;
   visibility: hidden;
 }
 
-.splash-content-hw3 {
+.splash-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  max-width: 440px;
 }
 
-.splash-cyan-goose {
-  height: 75px;
+.splash-logo-container {
+  margin-bottom: 30px;
+}
+
+.splash-elanadu-main-logo {
+  height: 110px;
   width: auto;
-  filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.85));
-  animation: goose-aura 2s infinite alternate;
+  filter: drop-shadow(0 0 30px rgba(255, 184, 0, 0.5));
+  animation: elanadu-glow 2s infinite alternate;
 }
 
-@keyframes goose-aura {
-  from { transform: scale(0.96); filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.5)); }
-  to { transform: scale(1.06); filter: drop-shadow(0 0 35px rgba(0, 229, 255, 0.95)); }
+@keyframes elanadu-glow {
+  from { transform: scale(0.97); filter: drop-shadow(0 0 20px rgba(0, 102, 204, 0.5)); }
+  to { transform: scale(1.04); filter: drop-shadow(0 0 40px rgba(255, 184, 0, 0.8)); }
 }
 
-.splash-elanadu-tag {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 24px 0 20px 0;
-}
-
-.splash-elanadu-logo {
-  height: 48px;
-  width: auto;
-}
-
-.splash-system-name {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.splash-progress-track {
-  width: 220px;
-  height: 4px;
+.splash-track {
+  width: 260px;
+  height: 5px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-.splash-progress-fill {
+.splash-fill {
   height: 100%;
   width: 0%;
-  background: var(--color-cyan);
+  background: linear-gradient(90deg, var(--elanadu-blue), var(--elanadu-yellow));
   transition: width 0.2s ease;
 }
 
-.splash-powered-tagline {
-  font-size: 0.8rem;
-  color: #64748b;
-  font-family: 'JetBrains Mono', monospace;
+.splash-footer-tagline {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+.splash-footer-tagline strong {
+  color: #ffffff;
 }
 
 /* ==========================================================================
-   SCREENSHOT 2: HEADER NAVBAR PANEL
+   REQUIREMENT 1 & 2 & 3: NAVBAR HEADER & DROPDOWN MENU
    ========================================================================== */
-.hw3-header-panel {
+.app-header-elanadu {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 24px;
   background: var(--bg-header);
   border-bottom: 1px solid var(--border-app);
-  height: 62px;
+  height: 60px;
 }
 
-.header-left-brand {
+.header-left {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.header-goose-icon {
-  height: 32px;
-  width: auto;
-  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
-}
-
 .header-elanadu-logo {
-  height: 36px;
+  height: 40px;
   width: auto;
   object-fit: contain;
+}
+
+.header-client-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
   border-left: 1px solid var(--border-subtle);
   padding-left: 14px;
 }
 
-.header-center-title {
+.header-center {
   flex: 1;
   text-align: center;
 }
 
-.hw3-main-title {
+.header-system-title {
   font-size: 1.55rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--text-main) 0%, var(--elanadu-yellow) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.header-right-controls {
+.header-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* HeatWatch 3 Rounded Square Buttons (Screenshot 2) */
-.hw3-icon-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--bg-btn);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-main);
-  font-size: 1.1rem;
-  display: flex;
+/* REQUIREMENT 3: DROPDOWN MENU STYLING */
+.dropdown-wrapper {
+  position: relative;
+}
+
+.btn-elanadu {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-btn);
+  color: var(--text-main);
   transition: all 0.2s ease;
 }
 
-.hw3-icon-btn:hover {
+.btn-elanadu:hover {
   background: var(--bg-btn-hover);
-  border-color: var(--color-cyan);
-  color: var(--color-cyan);
+  border-color: var(--elanadu-blue);
 }
 
-/* --- TAB SELECTOR BAR --- */
-.hw3-tab-selector-bar {
-  display: flex;
-  gap: 8px;
-  padding: 0 24px;
+.btn-nav-dropdown {
+  padding: 8px 16px;
+  font-weight: 700;
+  background: var(--elanadu-blue);
+  color: #ffffff;
+  border-color: var(--elanadu-blue);
+}
+.btn-nav-dropdown:hover {
+  background: #003380;
+}
+
+.caret-icon { font-size: 0.75rem; margin-left: 4px; }
+
+.dropdown-menu-list {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 220px;
   background: var(--bg-header);
-  border-bottom: 1px solid var(--border-app);
-  height: 42px;
-  align-items: center;
+  border: 1px solid var(--border-app);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 500;
+}
+.dropdown-menu-list.show {
+  display: flex;
+  animation: dropFade 0.2s ease-out;
 }
 
-.hw3-tab-btn {
+@keyframes dropFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 20px;
-  height: 100%;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
   background: transparent;
   border: none;
   color: var(--text-muted);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s ease;
+  text-align: left;
+  transition: all 0.15s ease;
 }
-
-.hw3-tab-btn.active {
-  color: var(--color-cyan);
-  border-bottom-color: var(--color-cyan);
-  background: rgba(0, 229, 255, 0.05);
+.dropdown-item.active {
+  background: var(--elanadu-blue);
+  color: #ffffff;
 }
-
-.hw3-tab-btn:hover:not(.active) {
+.dropdown-item:hover:not(.active) {
+  background: var(--bg-btn-hover);
   color: var(--text-main);
 }
 
-/* --- MAIN VIEWPORT --- */
-.hw3-main-viewport {
-  flex: 1;
-  padding: 16px 24px;
-  overflow: hidden;
-  height: calc(100vh - 130px);
+.btn-icon-square {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+  font-size: 1.05rem;
 }
 
-.hw3-pane {
+.btn-primary-blue {
+  background: var(--elanadu-blue);
+  color: #ffffff;
+  border-color: var(--elanadu-blue);
+}
+
+.btn-secondary-slate {
+  background: var(--bg-btn);
+  color: var(--text-main);
+  border-color: var(--border-subtle);
+}
+
+.btn-action-csv {
+  background: rgba(0, 230, 118, 0.15);
+  color: var(--color-green);
+  border-color: var(--color-green);
+}
+
+.btn-action-pdf {
+  background: rgba(255, 184, 0, 0.15);
+  color: var(--elanadu-yellow);
+  border-color: var(--elanadu-yellow);
+}
+
+/* SUB STATUS BAR */
+.sub-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--bg-subnav);
+  border-bottom: 1px solid var(--border-app);
+  height: 40px;
+  font-size: 0.8rem;
+}
+
+.view-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--elanadu-yellow);
+  box-shadow: 0 0 10px var(--elanadu-yellow);
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.status-normal { background: rgba(0, 230, 118, 0.15); color: var(--color-green); border: 1px solid var(--color-green); }
+.status-normal .status-dot { background: var(--color-green); }
+
+.status-warning { background: rgba(255, 184, 0, 0.2); color: var(--color-warning); border: 1px solid var(--color-warning); }
+.status-warning .status-dot { background: var(--color-warning); }
+
+.status-critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); border: 1px solid var(--color-critical); }
+.status-critical .status-dot { background: var(--color-critical); }
+
+.clock-display {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+}
+.clock-divider { margin: 0 4px; color: var(--border-subtle); }
+
+/* --- MAIN VIEWPORT --- */
+.main-viewport-content {
+  flex: 1;
+  padding: 16px 24px;
+  height: calc(100vh - 126px);
+  overflow: hidden;
+}
+
+.view-pane {
   display: none;
   height: 100%;
 }
-
-.hw3-pane.active {
+.view-pane.active {
   display: flex;
   flex-direction: column;
 }
 
 /* ==========================================================================
-   SCREENSHOT 2: REAL-TIME TELEMETRY GRID (2 ROWS x 4 COLUMNS)
+   REQUIREMENT 5: COMPACT 8-CHANNEL TELEMETRY GRID (2 ROWS x 4 COLUMNS NO SCROLL)
    ========================================================================== */
-.hw3-grid-2x4 {
+.elanadu-grid-2x4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(2, 1fr);
@@ -289,109 +414,109 @@ body {
   width: 100%;
 }
 
-.hw3-card-v3 {
-  background: var(--bg-panel);
+.elanadu-card {
+  background: var(--bg-card);
   border: 1px solid var(--border-app);
   border-radius: 14px;
   padding: 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
 }
 
-.hw3-card-v3:hover {
-  background: var(--bg-card);
-  border-color: var(--border-subtle);
+.elanadu-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--elanadu-blue);
 }
 
-.hw3-card-header {
+.card-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.hw3-badge-ch {
+.ch-badge-elanadu {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-cyan);
-  background: rgba(0, 229, 255, 0.12);
+  font-weight: 800;
+  color: var(--elanadu-yellow);
+  background: rgba(255, 184, 0, 0.12);
   padding: 3px 10px;
   border-radius: 12px;
 }
 
-.hw3-pill-status {
+.ch-status-pill {
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 14px;
-  background: #181d28;
-  color: #8a96a8;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
 }
+.ch-status-pill.online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); }
+.ch-status-pill.warning { background: rgba(255, 184, 0, 0.2); color: var(--color-warning); }
+.ch-status-pill.critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); }
 
-.hw3-pill-status.online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); }
-.hw3-pill-status.warning { background: rgba(255, 196, 0, 0.2); color: var(--color-warning); }
-.hw3-pill-status.critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); }
-
-.hw3-process-name {
+.ch-label-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #ffffff;
-  margin-top: 10px;
+  color: var(--text-main);
+  margin-top: 8px;
   line-height: 1.25;
   height: 2.5em;
   overflow: hidden;
 }
 
-.hw3-temp-display {
+.ch-temp-row {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
-.hw3-temp-num {
+.ch-temp-big {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main);
   line-height: 1;
 }
 
-.hw3-temp-unit {
-  font-size: 1.25rem;
+.ch-temp-unit {
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.hw3-line-divider {
-  height: 2px;
+.ch-divider-line {
+  height: 3px;
   background: var(--border-subtle);
-  border-radius: 1px;
+  border-radius: 2px;
   margin-bottom: 8px;
+  overflow: hidden;
 }
 
-.hw3-card-footer {
+.ch-divider-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--elanadu-blue), var(--elanadu-yellow));
+  transition: width 0.3s ease;
+}
+
+.ch-bottom-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 0.72rem;
-  color: #8a96a8;
+  color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
 }
 
-.hw3-just-now {
-  color: #525c6e;
-}
-
 /* ==========================================================================
-   SCREENSHOT 3 & 4: TRENDS & HISTORY PANELS
+   REQUIREMENT 5 & 6: STANDARDIZED TELEMETRY LOGS & TRENDS PANELS
    ========================================================================== */
-.hw3-container-panel {
+.elanadu-panel-box {
   background: var(--bg-panel);
   border: 1px solid var(--border-app);
   border-radius: 14px;
@@ -401,7 +526,7 @@ body {
   flex-direction: column;
 }
 
-.trends-top-row, .history-top-row {
+.panel-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -410,19 +535,19 @@ body {
   gap: 12px;
 }
 
-.hw3-section-title {
-  font-size: 1.3rem;
+.panel-title {
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
-.trends-controls-right, .history-controls-left, .history-controls-right {
+.toolbar-actions-group, .toolbar-left-inputs, .toolbar-right-exports {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.hw3-select {
+.elanadu-select {
   padding: 8px 14px;
   border-radius: 8px;
   background: var(--bg-btn);
@@ -432,16 +557,16 @@ body {
   outline: none;
 }
 
-.hw3-range-group {
+.range-btn-group {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   background: var(--bg-btn);
   padding: 3px;
   border-radius: 8px;
 }
 
-.hw3-btn-range {
-  padding: 6px 14px;
+.range-btn {
+  padding: 6px 12px;
   border-radius: 6px;
   border: none;
   background: transparent;
@@ -450,78 +575,36 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
-
-.hw3-btn-range.active {
-  background: var(--bg-btn-hover);
+.range-btn.active {
+  background: var(--elanadu-blue);
   color: #ffffff;
 }
 
-.hw3-btn-action {
-  padding: 8px 18px;
-  border-radius: 8px;
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-green { background: #00c853; color: #ffffff; }
-.btn-blue { background: #2979ff; color: #ffffff; }
-
-.hw3-btn-pill {
-  background: var(--bg-btn);
-  border: 1px solid var(--border-subtle);
-  color: #ffffff;
-  padding: 8px 18px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.hw3-chart-area {
+.chart-container {
   flex: 1;
   position: relative;
   width: 100%;
 }
 
-.trends-bottom-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-subtle);
-  margin-top: 14px;
-}
-
-.trends-bottom-row h3 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.hw3-table-wrapper {
+.standard-table-wrapper {
   flex: 1;
   overflow-y: auto;
 }
 
-.hw3-data-table {
+.elanadu-standard-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
 
-.hw3-data-table th, .hw3-data-table td {
+.elanadu-standard-table th, .elanadu-standard-table td {
   padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid var(--border-subtle);
 }
 
-.hw3-data-table th {
-  color: #6e7b91;
+.elanadu-standard-table th {
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -532,94 +615,74 @@ body {
 }
 
 /* ==========================================================================
-   SCREENSHOT 5: SYSTEM DIAGNOSTICS & RESOURCE MONITOR
+   SYSTEM DIAGNOSTICS
    ========================================================================== */
-.diag-top-cards-row {
+.diag-metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-bottom: 16px;
 }
 
-.diag-metric-card {
+.diag-card-box {
   background: var(--bg-panel);
   border: 1px solid var(--border-app);
   border-radius: 14px;
-  padding: 20px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
-.diag-metric-title {
+.diag-card-label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #8a96a8;
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
-.diag-metric-val {
+.diag-card-number {
   font-family: 'JetBrains Mono', monospace;
   font-size: 2.2rem;
   font-weight: 800;
-  color: var(--color-cyan);
+  color: var(--elanadu-yellow);
 }
 
-.diag-bottom-panel {
-  flex: 1;
-}
+.diag-details-panel { flex: 1; }
 
-.diag-details-grid {
+.diag-grid-rows {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
-  margin-top: 20px;
+  gap: 30px;
+  margin-top: 16px;
 }
 
-.diag-entry-row {
+.diag-row-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
-  font-size: 0.92rem;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
 }
 
-.diag-entry-key {
-  color: #ffffff;
-  font-weight: 700;
-}
+.diag-key { font-weight: 700; color: var(--text-main); }
+.diag-val { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.font-yellow { color: var(--elanadu-yellow); font-weight: 700; }
+.pill-online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
 
-.diag-entry-val {
-  color: #8a96a8;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.font-cyan { color: var(--color-cyan); font-weight: 700; }
-
-.pill-ppi-status {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 12px;
-
-}
-.pill-ppi-status.online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); }
-.pill-ppi-status.offline { background: rgba(255, 23, 68, 0.2); color: var(--color-critical); }
-
-/* --- MODALS --- */
-.hw3-modal-overlay {
+/* MODALS */
+.modal-backdrop {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
-.hw3-modal-overlay.active { display: flex; }
+.modal-backdrop.active { display: flex; }
 
-.hw3-modal-box {
+.modal-card-elanadu {
   background: var(--bg-panel);
   border: 1px solid var(--border-app);
   border-radius: 16px;
@@ -629,34 +692,35 @@ body {
 .modal-small { max-width: 400px; }
 .modal-large { max-width: 950px; }
 
-.hw3-modal-header {
+.modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
 }
-.hw3-modal-header h3 { font-size: 1rem; font-weight: 700; color: #ffffff; }
-.hw3-modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+.modal-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+.modal-close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
 
-.hw3-modal-body { padding: 20px; }
-.hw3-input {
+.modal-body { padding: 20px; }
+.elanadu-input {
   width: 100%; padding: 10px 14px; border-radius: 8px;
   background: var(--bg-btn); border: 1px solid var(--border-subtle);
-  color: #ffffff; font-size: 0.9rem; margin-top: 10px;
+  color: var(--text-main); font-size: 0.9rem; margin-top: 10px;
 }
 
-.settings-scroll-table { max-height: 400px; overflow-y: auto; }
+.settings-table-wrapper { max-height: 400px; overflow-y: auto; }
 
-.hw3-modal-footer {
+.modal-footer-flex {
   display: flex; justify-content: space-between; align-items: center;
   margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-subtle);
 }
 
-.flex-gap { display: flex; gap: 8px; }
+.gap-flex { display: flex; gap: 8px; }
 .w-full { width: 100%; }
-.margin-top { margin-top: 14px; }
-.text-error { color: var(--color-critical); font-size: 0.8rem; margin-top: 6px; }
+.margin-t { margin-top: 14px; }
+.subtle-text { font-size: 0.85rem; color: var(--text-muted); }
+.error-msg-text { color: var(--color-critical); font-size: 0.8rem; margin-top: 6px; }
 
-.hw3-footer {
+.app-footer-elanadu {
   display: flex; justify-content: space-between; padding: 6px 24px;
   font-size: 0.72rem; color: var(--text-subtle); border-top: 1px solid var(--border-app);
   background: var(--bg-header); height: 26px; align-items: center;
