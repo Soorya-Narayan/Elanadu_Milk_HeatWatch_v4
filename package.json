@@ -1,0 +1,30 @@
+{
+  "name": "elanadu-milk-heatwatch-v4",
+  "version": "4.0.0",
+  "description": "Industrial Temperature Monitoring & Telemetry Platform for Elanadu Milk Products",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "heatwatch",
+    "elanadu",
+    "telemetry",
+    "rtd",
+    "temperature-monitoring",
+    "raspberry-pi",
+    "influxdb",
+    "websocket"
+  ],
+  "author": "Goose Industrial Solutions",
+  "license": "Proprietary",
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.33.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "systeminformation": "^5.22.6",
+    "ws": "^8.17.0"
+  }
+}

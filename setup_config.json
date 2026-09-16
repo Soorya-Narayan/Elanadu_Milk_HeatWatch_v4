@@ -1,0 +1,145 @@
+{
+  "isConfigured": true,
+  "client": "Elanadu Milk Products",
+  "facility": "Central Dairy Processing Plant",
+  "system": "HeatWatch 4 Telemetry Console",
+  "version": "4.0.0",
+  "server": {
+    "port": 3001,
+    "wsPort": 3001,
+    "pollIntervalMs": 2000
+  },
+  "user": {
+    "username": "admin",
+    "password": "admin",
+    "role": "Plant Operations Admin"
+  },
+  "poller": {
+    "rtdIp": "192.168.1.2",
+    "rtdPort": 80,
+    "timeoutMs": 1500,
+    "mockMode": true,
+    "hysteresis": 0.5
+  },
+  "influx": {
+    "url": "http://localhost:8086",
+    "token": "elanadu_heatwatch_secret_token_2026",
+    "org": "elanadu_heatwatch",
+    "bucket": "temperature_telemetry"
+  },
+  "relay": {
+    "enabled": true,
+    "gpioPins": {
+      "warning": 23,
+      "critical": 24,
+      "hooter": 18
+    },
+    "muteDurationSec": 300
+  },
+  "sensors": [
+    {
+      "id": "CH1",
+      "name": "Pasteurizer_Heating",
+      "label": "Pasteurizer Heating Zone",
+      "unit": "°C",
+      "lolo": 60.0,
+      "lo": 68.0,
+      "hi": 88.0,
+      "hihi": 93.0,
+      "offset": 0.0,
+      "target": 75.0,
+      "active": true
+    },
+    {
+      "id": "CH2",
+      "name": "Pasteurizer_Holding",
+      "label": "Pasteurizer Holding Tube",
+      "unit": "°C",
+      "lolo": 65.0,
+      "lo": 70.0,
+      "hi": 80.0,
+      "hihi": 85.0,
+      "offset": 0.0,
+      "target": 72.5,
+      "active": true
+    },
+    {
+      "id": "CH3",
+      "name": "Pre_Chiller_Outlet",
+      "label": "Pre-Chiller Milk Outlet",
+      "unit": "°C",
+      "lolo": 3.0,
+      "lo": 5.0,
+      "hi": 18.0,
+      "hihi": 24.0,
+      "offset": 0.0,
+      "target": 8.0,
+      "active": true
+    },
+    {
+      "id": "CH4",
+      "name": "IBT_Chilled_Water",
+      "label": "Ice Bank Tank (IBT) Water",
+      "unit": "°C",
+      "lolo": 0.0,
+      "lo": 1.0,
+      "hi": 5.0,
+      "hihi": 8.0,
+      "offset": 0.0,
+      "target": 2.0,
+      "active": true
+    },
+    {
+      "id": "CH5",
+      "name": "Raw_Milk_Silo_01",
+      "label": "Raw Milk Storage Silo 1",
+      "unit": "°C",
+      "lolo": 1.0,
+      "lo": 2.0,
+      "hi": 6.0,
+      "hihi": 8.5,
+      "offset": 0.0,
+      "target": 3.5,
+      "active": true
+    },
+    {
+      "id": "CH6",
+      "name": "Processed_Silo_02",
+      "label": "Processed Milk Silo 2",
+      "unit": "°C",
+      "lolo": 1.0,
+      "lo": 2.0,
+      "hi": 6.0,
+      "hihi": 8.5,
+      "offset": 0.0,
+      "target": 3.5,
+      "active": true
+    },
+    {
+      "id": "CH7",
+      "name": "Cold_Storage_Room",
+      "label": "Finished Product Cold Room",
+      "unit": "°C",
+      "lolo": 0.0,
+      "lo": 2.0,
+      "hi": 6.0,
+      "hihi": 8.0,
+      "offset": 0.0,
+      "target": 4.0,
+      "active": true
+    },
+    {
+      "id": "CH8",
+      "name": "CIP_Rinse_Line",
+      "label": "CIP Clean-In-Place Rinse",
+      "unit": "°C",
+      "lolo": 25.0,
+      "lo": 50.0,
+      "hi": 82.0,
+      "hihi": 90.0,
+      "offset": 0.0,
+      "target": 70.0,
+      "active": true
+    }
+  ]
+}

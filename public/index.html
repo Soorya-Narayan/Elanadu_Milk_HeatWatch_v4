@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HeatWatch 4 — Elanadu Milk Products Telemetry</title>
+  
+  <!-- Modern Industrial Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons & Chart.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="theme-dark">
+
+  <!-- Main Container -->
+  <div id="app" class="app-layout">
+    
+    <!-- Top Bar Navigation Header -->
+    <header class="app-header">
+      <div class="brand-container">
+        <img src="assets/elanadu_logo.png" alt="Elanadu Milk" class="client-logo" />
+        <div class="brand-divider"></div>
+        <div class="brand-meta">
+          <h1 class="system-title">HeatWatch 4</h1>
+          <span class="facility-subtitle">Elanadu Milk Products • Dairy Processing Telemetry</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div id="global-status-pill" class="status-badge status-normal">
+          <span class="status-dot"></span>
+          <span id="global-status-text">SYSTEM NORMAL</span>
+        </div>
+        <div class="telemetry-mode-tag">
+          <i class="fa-solid fa-microchip"></i> <span id="telemetry-mode-label">LIVE HARDWARE</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="clock-widget">
+          <div id="live-time" class="time-display">12:00:00 AM</div>
+          <div id="live-date" class="date-display">Sep 16, 2026</div>
+        </div>
+
+        <button id="btn-mute-alarm" class="btn btn-warning btn-icon" title="Mute Alarm Siren">
+          <i class="fa-solid fa-volume-xmark"></i>
+          <span>Mute Siren</span>
+        </button>
+
+        <button id="btn-system-diag" class="btn btn-glass btn-icon" title="System Diagnostics">
+          <i class="fa-solid fa-server"></i>
+        </button>
+
+        <button id="btn-settings" class="btn btn-primary btn-icon" title="Admin Settings">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs-bar">
+      <button class="nav-tab active" data-tab="tab-telemetry">
+        <i class="fa-solid fa-temperature-three-quarters"></i> Live Telemetry Grid
+      </button>
+      <button class="nav-tab" data-tab="tab-trends">
+        <i class="fa-solid fa-chart-line"></i> Thermal Analytics & Trends
+      </button>
+
+    </nav>
+
+    <!-- Main Content Body -->
+    <main class="content-area">
+      
+      <!-- TAB 1: LIVE TELEMETRY GRID -->
+      <section id="tab-telemetry" class="tab-pane active">
+        <div class="grid-header-summary">
+          <div class="summary-metric-card">
+            <span class="metric-label">Active Sensors</span>
+            <span class="metric-value">8 / 8</span>
+          </div>
+          <div class="summary-metric-card">
+            <span class="metric-label">Polling Frequency</span>
+            <span class="metric-value">2.0 sec</span>
+          </div>
+          <div class="summary-metric-card">
+            <span class="metric-label">Active Alarms</span>
+            <span id="active-alarm-count" class="metric-value status-text-normal">0 Breach</span>
+          </div>
+          <div class="summary-metric-card">
+            <span class="metric-label">Data Storage</span>
+            <span class="metric-value">InfluxDB v2</span>
+          </div>
+        </div>
+
+        <!-- 8-Channel Dynamic Telemetry Grid -->
+        <div id="sensor-grid" class="sensor-grid-container">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </section>
+
+      <!-- TAB 2: THERMAL ANALYTICS & TRENDS -->
+      <section id="tab-trends" class="tab-pane">
+        <div class="chart-control-panel">
+          <div class="panel-left">
+            <h3 class="panel-title"><i class="fa-solid fa-chart-line"></i> Multi-Channel Thermal Trends</h3>
+            <span class="panel-subtitle">Real-time historical trend profiling from InfluxDB engine</span>
+          </div>
+          <div class="panel-right">
+            <div class="btn-group-range">
+              <button class="btn-range active" data-hours="1">1 Hour</button>
+              <button class="btn-range" data-hours="6">6 Hours</button>
+              <button class="btn-range" data-hours="24">24 Hours</button>
+              <button class="btn-range" data-hours="168">7 Days</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container-wrapper glass-card">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer Branding -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>HeatWatch 4 Telemetry Console • <strong>Elanadu Milk Products</strong></span>
+      </div>
+      <div class="footer-right">
+        <span>Engineered by <strong>Goose Industrial Solutions</strong></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL 1: SYSTEM DIAGNOSTICS -->
+  <div id="modal-diagnostics" class="modal-overlay">
+    <div class="modal-box modal-medium glass-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-microchip"></i> System Diagnostics & SBC Health</h3>
+        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="diag-grid">
+          <div class="diag-card">
+            <i class="fa-solid fa-cpu diag-icon"></i>
+            <span class="diag-title">CPU Load</span>
+            <span id="diag-cpu-load" class="diag-value">--%</span>
+          </div>
+          <div class="diag-card">
+            <i class="fa-solid fa-temperature-high diag-icon"></i>
+            <span class="diag-title">Core Temperature</span>
+            <span id="diag-cpu-temp" class="diag-value">-- °C</span>
+          </div>
+          <div class="diag-card">
+            <i class="fa-solid fa-memory diag-icon"></i>
+            <span class="diag-title">RAM Usage</span>
+            <span id="diag-ram-usage" class="diag-value">-- MB</span>
+          </div>
+          <div class="diag-card">
+            <i class="fa-solid fa-hard-drive diag-icon"></i>
+            <span class="diag-title">NVMe / SD Storage</span>
+            <span id="diag-disk-usage" class="diag-value">--%</span>
+          </div>
+        </div>
+        <div class="diag-info-box">
+          <div><strong>Telemetry Module:</strong> PPI AIME 8U (192.168.1.2)</div>
+          <div><strong>Database Engine:</strong> InfluxDB v2 (elanadu_heatwatch)</div>
+          <div><strong>Daemon Status:</strong> Dashboard (Active) | Poller (Active) | Relay (Active)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PASSWORD AUTHENTICATION -->
+  <div id="modal-auth" class="modal-overlay">
+    <div class="modal-box modal-small glass-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-lock"></i> Administrator Login</h3>
+        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-subtle">Enter administrator password to unlock plant settings:</p>
+        <div class="form-group">
+          <input type="password" id="auth-password" class="form-control" placeholder="Enter Admin Password..." />
+        </div>
+        <div id="auth-error-msg" class="text-error" style="display:none;">Invalid credentials</div>
+        <div class="modal-actions">
+          <button id="btn-submit-auth" class="btn btn-primary w-full">Authenticate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ADMIN SETTINGS -->
+  <div id="modal-settings" class="modal-overlay">
+    <div class="modal-box modal-large glass-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-sliders"></i> Plant Sensor Configuration & Alarm Limits</h3>
+        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-scroll-area">
+          <table class="settings-table">
+            <thead>
+              <tr>
+                <th>Channel</th>
+                <th>Process Label</th>
+                <th>LoLo (°C)</th>
+                <th>Lo (°C)</th>
+                <th>Target (°C)</th>
+                <th>Hi (°C)</th>
+                <th>HiHi (°C)</th>
+                <th>Offset (°C)</th>
+              </tr>
+            </thead>
+            <tbody id="settings-sensors-table">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-actions flex-between">
+          <button id="btn-reset-factory" class="btn btn-danger-ghost">Reset Defaults</button>
+          <div class="flex-gap">
+            <button class="btn btn-glass modal-close">Cancel</button>
+            <button id="btn-save-settings" class="btn btn-success">Save Configuration</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Alarm Chime -->
+  <audio id="alarm-audio" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto" loop></audio>
+
+  <!-- Application JS Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>
