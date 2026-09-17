@@ -564,6 +564,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const passwordInput = document.getElementById('auth-password');
+  if (passwordInput && btnSubmitAuth) {
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        btnSubmitAuth.click();
+      }
+    });
+  }
+
   const btnSubmitAuth = document.getElementById('btn-submit-auth');
   if (btnSubmitAuth) {
     btnSubmitAuth.addEventListener('click', async () => {
@@ -625,6 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('cfg-influx-url')) document.getElementById('cfg-influx-url').value = influx.url || 'http://localhost:8086';
     if (document.getElementById('cfg-influx-org')) document.getElementById('cfg-influx-org').value = influx.org || 'elanadu_heatwatch';
     if (document.getElementById('cfg-influx-bucket')) document.getElementById('cfg-influx-bucket').value = influx.bucket || 'temperature_telemetry';
+    if (document.getElementById('cfg-influx-token')) document.getElementById('cfg-influx-token').value = influx.token || 'elanadu_heatwatch_secret_token_2026';
 
     // Populate Security Form
     const user = cfg.user || {};
@@ -653,10 +663,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnResetFactory = document.getElementById('btn-reset-factory');
+  if (btnResetFactory) {
+    btnResetFactory.addEventListener('click', () => {
+      if (confirm('Reset form values to active system configuration?')) {
+        if (activeConfig) populateSettingsForm(activeConfig);
+      }
+    });
+  }
+
   const btnSaveSettings = document.getElementById('btn-save-settings');
   if (btnSaveSettings) {
     btnSaveSettings.addEventListener('click', async () => {
       if (!activeConfig) activeConfig = {};
+      activeConfig.sensors = activeConfig.sensors || [];
 
       // Collect Sensors Table Data
       const inputs = document.querySelectorAll('#settings-sensors-table input');
@@ -691,6 +711,9 @@ document.addEventListener('DOMContentLoaded', () => {
       activeConfig.influx.url = document.getElementById('cfg-influx-url').value;
       activeConfig.influx.org = document.getElementById('cfg-influx-org').value;
       activeConfig.influx.bucket = document.getElementById('cfg-influx-bucket').value;
+      if (document.getElementById('cfg-influx-token')) {
+        activeConfig.influx.token = document.getElementById('cfg-influx-token').value;
+      }
 
       // Collect Security Data
       activeConfig.user = activeConfig.user || {};

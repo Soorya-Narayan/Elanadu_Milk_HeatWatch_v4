@@ -39,13 +39,17 @@ function loadConfig() {
 // Save Configuration
 function saveConfig(configData) {
   try {
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(configData, null, 2), 'utf8');
+    const tmpPath = CONFIG_PATH + '.tmp';
+    fs.writeFileSync(tmpPath, JSON.stringify(configData, null, 2), 'utf8');
+    fs.renameSync(tmpPath, CONFIG_PATH);
     return true;
   } catch (err) {
     console.error('Error saving setup_config.json:', err.message);
     return false;
   }
 }
+
+let lastValidTelemetry = null;
 
 // Read Telemetry Snapshot
 function getLatestTelemetry() {
@@ -54,10 +58,15 @@ function getLatestTelemetry() {
       const raw = fs.readFileSync(STATE_FILE, 'utf8');
       const parsed = JSON.parse(raw);
       if (parsed && parsed.channels && parsed.channels.length > 0) {
+        lastValidTelemetry = parsed;
         return parsed;
       }
     }
   } catch (err) {}
+
+  if (lastValidTelemetry) {
+    return lastValidTelemetry;
+  }
 
   // Fallback initial 8-channel telemetry snapshot if poller is initializing
   const config = loadConfig();
