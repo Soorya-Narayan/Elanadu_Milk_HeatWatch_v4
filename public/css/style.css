@@ -336,26 +336,39 @@ body.theme-light .splash-overlay-elanadu {
 .ch-status-pill.critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); }
 
 .ch-label-title {
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   font-weight: 700;
   color: var(--text-main);
-  margin-top: 8px;
+  margin-top: 6px;
   line-height: 1.25;
   height: 2.5em;
   overflow: hidden;
+  text-align: center;
 }
 
-.ch-temp-row { display: flex; align-items: baseline; gap: 6px; margin: 8px 0; }
+.ch-temp-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+  width: 100%;
+}
 
 .ch-temp-big {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 2.8rem;
+  font-size: 3.6rem;
   font-weight: 800;
   color: var(--text-main);
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
-.ch-temp-unit { font-size: 1.2rem; font-weight: 600; color: var(--text-muted); }
+.ch-temp-unit {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
 .ch-divider-line { height: 3px; background: var(--border-subtle); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
 .ch-divider-fill { height: 100%; background: linear-gradient(90deg, var(--elanadu-blue), var(--elanadu-yellow)); transition: width 0.3s ease; }
 .ch-bottom-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
