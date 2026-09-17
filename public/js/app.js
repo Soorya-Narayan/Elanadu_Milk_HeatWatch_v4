@@ -197,10 +197,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const isWarning = ch.status && ch.status.includes('WARNING');
 
       let pillHtml = '';
+      let cardStateClass = '';
       if (isCritical) {
         pillHtml = '<span class="ch-status-pill critical">• CRITICAL</span>';
+        cardStateClass = 'card-critical';
       } else if (isWarning) {
         pillHtml = '<span class="ch-status-pill warning">• WARNING</span>';
+        cardStateClass = 'card-warning';
       }
 
       const tempStr = (ch.value !== undefined && ch.value !== null) ? ch.value.toFixed(1) : '--';
@@ -209,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const percent = Math.min(100, Math.max(0, ((ch.value - minVal) / (maxVal - minVal)) * 100));
 
       const cardHtml = `
-        <div class="elanadu-card">
+        <div class="elanadu-card ${cardStateClass}">
           <div class="card-top-row">
             <span class="ch-badge-elanadu">${ch.id}</span>
             ${pillHtml}

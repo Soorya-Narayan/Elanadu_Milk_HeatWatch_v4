@@ -311,6 +311,61 @@ body.theme-light .splash-overlay-elanadu {
   border-color: var(--elanadu-blue);
 }
 
+/* FLEX CARD ALARM STATES: AMBER (WARNING) & RED (CRITICAL) */
+.elanadu-card.card-warning {
+  background: linear-gradient(145deg, rgba(255, 184, 0, 0.22) 0%, rgba(180, 120, 0, 0.12) 100%) !important;
+  border: 2px solid var(--color-warning) !important;
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.35) !important;
+  animation: pulseAmber 2s infinite ease-in-out;
+}
+
+.elanadu-card.card-warning .ch-temp-big {
+  color: var(--color-warning) !important;
+  text-shadow: 0 0 12px rgba(255, 184, 0, 0.4);
+}
+
+.elanadu-card.card-warning .ch-badge-elanadu {
+  background: rgba(255, 184, 0, 0.25);
+  color: #ffffff;
+}
+
+.elanadu-card.card-warning .ch-divider-fill {
+  background: var(--color-warning) !important;
+}
+
+.elanadu-card.card-critical {
+  background: linear-gradient(145deg, rgba(255, 23, 68, 0.28) 0%, rgba(160, 0, 30, 0.18) 100%) !important;
+  border: 2px solid var(--color-critical) !important;
+  box-shadow: 0 0 25px rgba(255, 23, 68, 0.5) !important;
+  animation: pulseRed 1.2s infinite ease-in-out;
+}
+
+.elanadu-card.card-critical .ch-temp-big {
+  color: var(--color-critical) !important;
+  text-shadow: 0 0 15px rgba(255, 23, 68, 0.6);
+}
+
+.elanadu-card.card-critical .ch-badge-elanadu {
+  background: rgba(255, 23, 68, 0.3);
+  color: #ffffff;
+}
+
+.elanadu-card.card-critical .ch-divider-fill {
+  background: var(--color-critical) !important;
+}
+
+@keyframes pulseAmber {
+  0% { box-shadow: 0 0 10px rgba(255, 184, 0, 0.3); border-color: rgba(255, 184, 0, 0.8); }
+  50% { box-shadow: 0 0 25px rgba(255, 184, 0, 0.6); border-color: rgba(255, 184, 0, 1); }
+  100% { box-shadow: 0 0 10px rgba(255, 184, 0, 0.3); border-color: rgba(255, 184, 0, 0.8); }
+}
+
+@keyframes pulseRed {
+  0% { box-shadow: 0 0 12px rgba(255, 23, 68, 0.4); border-color: rgba(255, 23, 68, 0.8); }
+  50% { box-shadow: 0 0 30px rgba(255, 23, 68, 0.8); border-color: rgba(255, 23, 68, 1); }
+  100% { box-shadow: 0 0 12px rgba(255, 23, 68, 0.4); border-color: rgba(255, 23, 68, 0.8); }
+}
+
 .card-top-row { display: flex; align-items: center; justify-content: space-between; }
 
 .ch-badge-elanadu {
