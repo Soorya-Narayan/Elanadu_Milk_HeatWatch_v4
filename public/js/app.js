@@ -193,17 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
     elSensorGrid.innerHTML = '';
 
     channels.forEach((ch) => {
-      const isCritical = ch.status.includes('CRITICAL');
-      const isWarning = ch.status.includes('WARNING');
+      const isCritical = ch.status && ch.status.includes('CRITICAL');
+      const isWarning = ch.status && ch.status.includes('WARNING');
 
-      let pillClass = 'online';
-      let pillText = '• ONLINE';
+      let pillHtml = '';
       if (isCritical) {
-        pillClass = 'critical';
-        pillText = '• CRITICAL';
+        pillHtml = '<span class="ch-status-pill critical">• CRITICAL</span>';
       } else if (isWarning) {
-        pillClass = 'warning';
-        pillText = '• WARNING';
+        pillHtml = '<span class="ch-status-pill warning">• WARNING</span>';
       }
 
       const tempStr = (ch.value !== undefined && ch.value !== null) ? ch.value.toFixed(1) : '--';
@@ -215,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="elanadu-card">
           <div class="card-top-row">
             <span class="ch-badge-elanadu">${ch.id}</span>
-            <span class="ch-status-pill ${pillClass}">${pillText}</span>
+            ${pillHtml}
           </div>
 
           <div class="ch-label-title">${ch.label}</div>
