@@ -277,6 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 
+  let rawHistorySensors = [];
+
   // Telemetry Logs Query
   async function fetchHistoricalLogs() {
     const hoursSelect = document.getElementById('history-hours-select');
@@ -288,7 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const resp = await fetch(`/api/history?hours=${hours}`);
       const result = await resp.json();
       rawHistoryData = result.data || [];
-      renderHistoryTable(result.sensors, rawHistoryData, rtdFilter);
+      rawHistorySensors = result.sensors || [];
+      renderHistoryTable(rawHistorySensors, rawHistoryData, rtdFilter);
     } catch (err) {}
   }
 
@@ -312,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr>
             <td><strong>${timeStr}</strong></td>
             <td><span class="ch-badge-elanadu">${s.id}</span></td>
-            <td><strong>${s.label}</strong></td>
+            <td><strong>${s.label || s.name}</strong></td>
             <td><strong>${val !== undefined ? val.toFixed(1) : '--'} °C</strong></td>
             <td>${s.target || 25.0} °C</td>
             <td><span class="ch-status-pill online">• ONLINE</span></td>
@@ -334,14 +337,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const rtdFilter = rtdSelect ? rtdSelect.value : 'ALL';
       if (!rawHistoryData.length) return alert('No historical data available to export.');
 
+      const sensors = rawHistorySensors.length ? rawHistorySensors : (latestTelemetryData ? latestTelemetryData.channels : []);
       let csvContent = 'data:text/csv;charset=utf-8,Timestamp,RTD_Channel,Process_Description,Temperature_C,Target_C,Status\n';
       rawHistoryData.forEach((row) => {
         const timeStr = new Date(row.timestamp).toISOString();
-        const sensors = latestTelemetryData ? latestTelemetryData.channels : [];
         sensors.forEach((s) => {
           if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
           const val = row[s.id];
-          csvContent += `"${timeStr}","${s.id}","${s.label}",${val || ''},${s.target || 25.0},"ONLINE"\n`;
+          csvContent += `"${timeStr}","${s.id}","${s.label || s.name}",${val !== undefined ? val : ''},${s.target || 25.0},"ONLINE"\n`;
         });
       });
 
@@ -385,14 +388,14 @@ document.addEventListener('DOMContentLoaded', () => {
       doc.line(12, 28, 198, 28);
 
       const tableRows = [];
-      const sensors = latestTelemetryData ? latestTelemetryData.channels : [];
+      const sensors = rawHistorySensors.length ? rawHistorySensors : (latestTelemetryData ? latestTelemetryData.channels : []);
 
       rawHistoryData.forEach((row) => {
         const timeStr = new Date(row.timestamp).toLocaleString();
         sensors.forEach((s) => {
           if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
           const val = row[s.id];
-          tableRows.push([timeStr, s.id, s.label, `${val !== undefined ? val.toFixed(1) : '--'} °C`, `${s.target || 25.0} °C`, 'ONLINE']);
+          tableRows.push([timeStr, s.id, s.label || s.name, `${val !== undefined ? val.toFixed(1) : '--'} °C`, `${s.target || 25.0} °C`, 'ONLINE']);
         });
       });
 
@@ -444,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const datasets = result.sensors
         .filter(s => rtdFilter === 'ALL' || s.id === rtdFilter)
         .map((sensor, idx) => ({
-          label: `${sensor.id} (${sensor.label})`,
+          label: `${sensor.id} (${sensor.label || sensor.name})`,
           data: result.data.map(row => row[sensor.id]),
           borderColor: CHANNEL_COLORS[idx % CHANNEL_COLORS.length],
           backgroundColor: 'transparent',
@@ -477,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnExportCsvTrends) {
     btnExportCsvTrends.addEventListener('click', () => {
       if (!trendChart) return;
-      let csvContent = 'data:text/csv;charset=utf-8,Timestamp,' + trendChart.data.datasets.map(d => d.label).join(',') + '\n';
+      let csvContent = 'data:text/csv;charset=utf-8,Timestamp,' + trendChart.data.datasets.map(d => `"${d.label.replace(/"/g, '""')}"`).join(',') + '\n';
       trendChart.data.labels.forEach((label, i) => {
         const rowVals = trendChart.data.datasets.map(d => d.data[i]);
         csvContent += `"${label}",${rowVals.join(',')}\n`;
@@ -750,5 +753,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchHistoricalLogs();
   fetchHistoricalTrends(24);
   fetchDiagnostics();
+  setInterval(fetchDiagnostics, 5000);
   initWebSocket();
 });
