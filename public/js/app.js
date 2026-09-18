@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const viewsDropdownMenu = document.getElementById('views-dropdown-menu');
   const currentViewLabel = document.getElementById('current-view-label');
   const dropdownBtnSettings = document.getElementById('dropdown-btn-settings');
+  const btnSettings = document.getElementById('btn-settings');
   
   const btnThemeToggle = document.getElementById('btn-theme-toggle');
   const iconThemeSun = document.getElementById('icon-theme-sun');
@@ -126,15 +127,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Requirement 2: Settings Trigger from Dropdown Menu
+  // Settings Workflow Trigger Function
+  function triggerSettingsWorkflow() {
+    if (isAuthenticated) {
+      openSettingsModal();
+    } else {
+      if (modalAuth) {
+        modalAuth.classList.add('active');
+        const passwordInput = document.getElementById('auth-password');
+        if (passwordInput) {
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      }
+    }
+  }
+
+  if (btnSettings) {
+    btnSettings.addEventListener('click', triggerSettingsWorkflow);
+  }
+
   if (dropdownBtnSettings) {
     dropdownBtnSettings.addEventListener('click', () => {
       if (viewsDropdownMenu) viewsDropdownMenu.classList.remove('show');
-      if (isAuthenticated) {
-        openSettingsModal();
-      } else {
-        if (modalAuth) modalAuth.classList.add('active');
-      }
+      triggerSettingsWorkflow();
     });
   }
 
@@ -567,7 +583,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const btnSubmitAuth = document.getElementById('btn-submit-auth');
   const passwordInput = document.getElementById('auth-password');
+
   if (passwordInput && btnSubmitAuth) {
     passwordInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -576,7 +594,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const btnSubmitAuth = document.getElementById('btn-submit-auth');
   if (btnSubmitAuth) {
     btnSubmitAuth.addEventListener('click', async () => {
       const passwordInput = document.getElementById('auth-password');
@@ -746,6 +763,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.modal-close-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+    });
+  });
+
+  document.querySelectorAll('.modal-backdrop').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
     });
   });
 
