@@ -114,8 +114,8 @@ class TelemetryPoller:
         return readings
 
     def evaluate_status(self, temp, sensor):
-        if temp is None or not sensor.get('active', True) or sensor.get('id') == 'CH8':
-            return "OPEN"
+        if temp is None or not sensor.get('active', True):
+            return "INACTIVE"
 
         lolo = sensor.get('lolo', -50.0)
         lo = sensor.get('lo', -40.0)

@@ -97,7 +97,7 @@ function getLatestTelemetry() {
         label: s.label,
         unit: s.unit || '°C',
         value: isOpen ? null : midpoint,
-        status: isOpen ? 'OPEN' : 'NORMAL',
+        status: isOpen ? 'INACTIVE' : 'NORMAL',
         lolo: s.lolo || 0,
         lo: lo,
         hi: hi,

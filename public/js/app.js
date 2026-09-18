@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'CH5', name: 'Raw_Milk_Silo_01', label: 'Raw Milk Storage Silo 1', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 1, lo: 2, hi: 6, hihi: 8.5, active: true },
       { id: 'CH6', name: 'Processed_Silo_02', label: 'Processed Milk Silo 2', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 1, lo: 2, hi: 6, hihi: 8.5, active: true },
       { id: 'CH7', name: 'Cold_Storage_Room', label: 'Finished Product Cold Room', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 0, lo: 2, hi: 6, hihi: 8, active: true },
-      { id: 'CH8', name: 'Unused_Open_Channel', label: 'Unused / Open Channel', unit: '°C', value: null, status: 'OPEN', lolo: 0, lo: 0, hi: 100, hihi: 100, active: false }
+      { id: 'CH8', name: 'Unused_Open_Channel', label: 'Unused / Open Channel', unit: '°C', value: null, status: 'INACTIVE', lolo: 0, lo: 0, hi: 100, hihi: 100, active: false }
     ]
   };
 
@@ -209,14 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
     elSensorGrid.innerHTML = '';
 
     channels.forEach((ch) => {
-      const isOpen = ch.id === 'CH8' || ch.status === 'OPEN' || ch.value === null || ch.value === undefined || ch.active === false;
-      const isCritical = !isOpen && ch.status && ch.status.includes('CRITICAL');
-      const isWarning = !isOpen && ch.status && ch.status.includes('WARNING');
+      const isInactive = ch.active === false || ch.status === 'INACTIVE' || ch.status === 'OPEN' || ch.value === null || ch.value === undefined;
+      const isCritical = !isInactive && ch.status && ch.status.includes('CRITICAL');
+      const isWarning = !isInactive && ch.status && ch.status.includes('WARNING');
 
       let pillHtml = '';
       let cardStateClass = '';
-      if (isOpen) {
-        pillHtml = '<span class="ch-status-pill open">• OPEN</span>';
+      if (isInactive) {
+        pillHtml = '<span class="ch-status-pill open">• INACTIVE</span>';
         cardStateClass = 'card-open';
       } else if (isCritical) {
         pillHtml = '<span class="ch-status-pill critical">• CRITICAL</span>';
@@ -226,14 +226,14 @@ document.addEventListener('DOMContentLoaded', () => {
         cardStateClass = 'card-warning';
       }
 
-      const tempStr = isOpen ? 'OPEN' : ch.value.toFixed(1);
-      const unitStr = isOpen ? '' : (ch.unit || '°C');
+      const tempStr = isInactive ? '-' : (typeof ch.value === 'number' ? ch.value.toFixed(1) : '-');
+      const unitStr = isInactive ? '' : (ch.unit || '°C');
       const minVal = (ch.lolo !== undefined) ? ch.lolo : 0;
       const maxVal = (ch.hihi !== undefined) ? ch.hihi : 100;
-      const percent = isOpen ? 0 : Math.min(100, Math.max(0, ((ch.value - minVal) / Math.max(1, maxVal - minVal)) * 100));
+      const percent = isInactive ? 0 : Math.min(100, Math.max(0, (((ch.value || 0) - minVal) / Math.max(1, maxVal - minVal)) * 100));
 
-      const bottomMetaHtml = isOpen
-        ? `<span>Status: Disconnected</span><span>CHANNEL OPEN</span>`
+      const bottomMetaHtml = isInactive
+        ? `<span>Status: Inactive Channel</span><span>CHANNEL OFF</span>`
         : `<span>Lo: ${ch.lo}°C | Hi: ${ch.hi}°C</span><span>HiHi: ${ch.hihi}°C</span>`;
 
       const cardHtml = `
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="ch-label-title">${ch.label}</div>
 
           <div class="ch-temp-row">
-            <span class="ch-temp-big ${isOpen ? 'text-open' : ''}">${tempStr}</span>
+            <span class="ch-temp-big ${isInactive ? 'text-open' : ''}">${tempStr}</span>
             ${unitStr ? `<span class="ch-temp-unit">${unitStr}</span>` : ''}
           </div>
 
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
 
     if (!data || !data.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">No telemetry log records found for selected time range.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-muted);">No telemetry log records found for selected time range.</td></tr>`;
       return;
     }
 
@@ -335,14 +335,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
 
         const val = row[s.id];
+        const isActive = s.active !== false && val !== null && val !== undefined;
+        const valStr = isActive ? `${val.toFixed(1)} °C` : '-';
+        const statusHtml = isActive
+          ? '<span class="ch-status-pill online">• ONLINE</span>'
+          : '<span class="ch-status-pill open">• INACTIVE</span>';
+
         const trHtml = `
           <tr>
             <td><strong>${timeStr}</strong></td>
             <td><span class="ch-badge-elanadu">${s.id}</span></td>
             <td><strong>${s.label || s.name}</strong></td>
-            <td><strong>${val !== undefined ? val.toFixed(1) : '--'} °C</strong></td>
-            <td>${s.target || 25.0} °C</td>
-            <td><span class="ch-status-pill online">• ONLINE</span></td>
+            <td><strong>${valStr}</strong></td>
+            <td>${statusHtml}</td>
           </tr>
         `;
         tbody.insertAdjacentHTML('beforeend', trHtml);
@@ -362,13 +367,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!rawHistoryData.length) return alert('No historical data available to export.');
 
       const sensors = rawHistorySensors.length ? rawHistorySensors : (latestTelemetryData ? latestTelemetryData.channels : []);
-      let csvContent = 'data:text/csv;charset=utf-8,Timestamp,RTD_Channel,Process_Description,Temperature_C,Target_C,Status\n';
+      let csvContent = 'data:text/csv;charset=utf-8,Timestamp,RTD_Channel,Process_Description,Temperature_C,Status\n';
       rawHistoryData.forEach((row) => {
         const timeStr = new Date(row.timestamp).toISOString();
         sensors.forEach((s) => {
           if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
           const val = row[s.id];
-          csvContent += `"${timeStr}","${s.id}","${s.label || s.name}",${val !== undefined ? val : ''},${s.target || 25.0},"ONLINE"\n`;
+          const isActive = s.active !== false && val !== null && val !== undefined;
+          const tempVal = isActive ? val : '-';
+          const statusVal = isActive ? 'ONLINE' : 'INACTIVE';
+          csvContent += `"${timeStr}","${s.id}","${s.label || s.name}",${tempVal},"${statusVal}"\n`;
         });
       });
 
@@ -419,13 +427,16 @@ document.addEventListener('DOMContentLoaded', () => {
         sensors.forEach((s) => {
           if (rtdFilter !== 'ALL' && s.id !== rtdFilter) return;
           const val = row[s.id];
-          tableRows.push([timeStr, s.id, s.label || s.name, `${val !== undefined ? val.toFixed(1) : '--'} °C`, `${s.target || 25.0} °C`, 'ONLINE']);
+          const isActive = s.active !== false && val !== null && val !== undefined;
+          const tempValStr = isActive ? `${val.toFixed(1)} °C` : '-';
+          const statusStr = isActive ? 'ONLINE' : 'INACTIVE';
+          tableRows.push([timeStr, s.id, s.label || s.name, tempValStr, statusStr]);
         });
       });
 
       doc.autoTable({
         startY: 32,
-        head: [['Timestamp', 'RTD', 'Process Description', 'Temperature', 'Target', 'Status']],
+        head: [['Timestamp', 'RTD', 'Process Description', 'Temperature', 'Status']],
         body: tableRows,
         headStyles: { fillColor: [0, 71, 171] },
         styles: { fontSize: 8 }
@@ -675,9 +686,11 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
 
     sensors.forEach((s) => {
+      const isActive = s.active !== false;
       const trHtml = `
         <tr>
           <td><strong>${s.id}</strong></td>
+          <td><input type="checkbox" data-id="${s.id}" data-field="active" ${isActive ? 'checked' : ''} class="elanadu-checkbox"></td>
           <td><input type="text" data-id="${s.id}" data-field="label" value="${s.label}" class="elanadu-input"></td>
           <td><input type="number" step="0.5" data-id="${s.id}" data-field="lolo" value="${s.lolo}" class="elanadu-input"></td>
           <td><input type="number" step="0.5" data-id="${s.id}" data-field="lo" value="${s.lo}" class="elanadu-input"></td>
@@ -712,7 +725,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const field = input.getAttribute('data-field');
         const sensor = activeConfig.sensors.find(s => s.id === cid);
         if (sensor) {
-          sensor[field] = field === 'label' ? input.value : parseFloat(input.value);
+          if (field === 'active') {
+            sensor[field] = input.checked;
+          } else if (field === 'label') {
+            sensor[field] = input.value;
+          } else {
+            sensor[field] = parseFloat(input.value);
+          }
         }
       });
 
