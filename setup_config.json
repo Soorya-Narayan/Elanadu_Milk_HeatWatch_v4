@@ -47,7 +47,6 @@
       "hi": 88.0,
       "hihi": 93.0,
       "offset": 0.0,
-      "target": 75.0,
       "active": true
     },
     {
@@ -60,7 +59,6 @@
       "hi": 80.0,
       "hihi": 85.0,
       "offset": 0.0,
-      "target": 72.5,
       "active": true
     },
     {
@@ -73,7 +71,6 @@
       "hi": 18.0,
       "hihi": 24.0,
       "offset": 0.0,
-      "target": 8.0,
       "active": true
     },
     {
@@ -86,7 +83,6 @@
       "hi": 5.0,
       "hihi": 8.0,
       "offset": 0.0,
-      "target": 2.0,
       "active": true
     },
     {
@@ -99,7 +95,6 @@
       "hi": 6.0,
       "hihi": 8.5,
       "offset": 0.0,
-      "target": 3.5,
       "active": true
     },
     {
@@ -112,7 +107,6 @@
       "hi": 6.0,
       "hihi": 8.5,
       "offset": 0.0,
-      "target": 3.5,
       "active": true
     },
     {
@@ -125,21 +119,19 @@
       "hi": 6.0,
       "hihi": 8.0,
       "offset": 0.0,
-      "target": 4.0,
       "active": true
     },
     {
       "id": "CH8",
-      "name": "CIP_Rinse_Line",
-      "label": "CIP Clean-In-Place Rinse",
+      "name": "Unused_Open_Channel",
+      "label": "Unused / Open Channel",
       "unit": "°C",
-      "lolo": 25.0,
-      "lo": 50.0,
-      "hi": 82.0,
-      "hihi": 90.0,
+      "lolo": 0.0,
+      "lo": 0.0,
+      "hi": 100.0,
+      "hihi": 100.0,
       "offset": 0.0,
-      "target": 70.0,
-      "active": true
+      "active": false
     }
   ]
 }

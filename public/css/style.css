@@ -389,6 +389,19 @@ body.theme-light .splash-overlay-elanadu {
 .ch-status-pill.online { background: rgba(0, 230, 118, 0.15); color: var(--color-green); }
 .ch-status-pill.warning { background: rgba(255, 184, 0, 0.2); color: var(--color-warning); }
 .ch-status-pill.critical { background: rgba(255, 23, 68, 0.25); color: var(--color-critical); }
+.ch-status-pill.open { background: rgba(140, 150, 165, 0.2); color: var(--text-muted); }
+
+.elanadu-card.card-open {
+  opacity: 0.8;
+  border-style: dashed;
+  border-color: var(--border-subtle);
+}
+
+.text-open {
+  font-size: 2.6rem !important;
+  color: var(--text-muted) !important;
+  letter-spacing: 0.04em;
+}
 
 .ch-label-title {
   font-size: 1.12rem;

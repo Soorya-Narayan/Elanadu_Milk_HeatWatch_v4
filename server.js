@@ -71,33 +71,40 @@ function getLatestTelemetry() {
   // Fallback initial 8-channel telemetry snapshot if poller is initializing
   const config = loadConfig();
   const sensors = config ? config.sensors : [
-    { id: 'CH1', name: 'Boiler_Temperature', label: 'Boiler Temperature', hihi: 95, hi: 85, lo: 20, target: 75 },
-    { id: 'CH2', name: 'Heat_Exchanger_Inlet', label: 'Heat Exchanger Inlet', hihi: 90, hi: 80, lo: 15, target: 72.5 },
-    { id: 'CH3', name: 'Heat_Exchanger_Outlet', label: 'Heat Exchanger Outlet', hihi: 85, hi: 75, lo: 10, target: 8 },
-    { id: 'CH4', name: 'Chilled_Water_Supply', label: 'Chilled Water Supply', hihi: 15, hi: 12, lo: 2, target: 2 },
-    { id: 'CH5', name: 'Primary_Storage_Tank', label: 'Primary Storage Tank', hihi: 10, hi: 8, lo: 2, target: 3.5 },
-    { id: 'CH6', name: 'Secondary_Storage', label: 'Secondary Storage Tank', hihi: 10, hi: 8, lo: 2, target: 3.5 },
-    { id: 'CH7', name: 'Condenser_Loop', label: 'Condenser Loop', hihi: 55, hi: 45, lo: 10, target: 4 },
-    { id: 'CH8', name: 'Ambient_Plant_Room', label: 'Ambient Plant Room', hihi: 45, hi: 38, lo: 10, target: 70 }
+    { id: 'CH1', name: 'Pasteurizer_Heating', label: 'Pasteurizer Heating Zone', hihi: 93, hi: 88, lo: 68, lolo: 60 },
+    { id: 'CH2', name: 'Pasteurizer_Holding', label: 'Pasteurizer Holding Tube', hihi: 85, hi: 80, lo: 70, lolo: 65 },
+    { id: 'CH3', name: 'Pre_Chiller_Outlet', label: 'Pre-Chiller Milk Outlet', hihi: 24, hi: 18, lo: 5, lolo: 3 },
+    { id: 'CH4', name: 'IBT_Chilled_Water', label: 'Ice Bank Tank Water', hihi: 8, hi: 5, lo: 1, lolo: 0 },
+    { id: 'CH5', name: 'Raw_Milk_Silo_01', label: 'Raw Milk Storage Silo 1', hihi: 8.5, hi: 6, lo: 2, lolo: 1 },
+    { id: 'CH6', name: 'Processed_Silo_02', label: 'Processed Milk Silo 2', hihi: 8.5, hi: 6, lo: 2, lolo: 1 },
+    { id: 'CH7', name: 'Cold_Storage_Room', label: 'Finished Product Cold Room', hihi: 8, hi: 6, lo: 2, lolo: 0 },
+    { id: 'CH8', name: 'Unused_Open_Channel', label: 'Unused / Open Channel', hihi: 100, hi: 100, lo: 0, lolo: 0, active: false }
   ];
 
   return {
     timestamp: new Date().toISOString(),
     systemStatus: 'NORMAL',
     mode: 'HARDWARE_PPI',
-    channels: sensors.map(s => ({
-      id: s.id,
-      name: s.name,
-      label: s.label,
-      unit: s.unit || '°C',
-      value: s.target || 25.0,
-      status: 'NORMAL',
-      lolo: s.lolo || 10,
-      lo: s.lo || 15,
-      hi: s.hi || 80,
-      hihi: s.hihi || 90,
-      target: s.target || 25
-    }))
+    channels: sensors.map(s => {
+      const isOpen = s.id === 'CH8' || s.active === false;
+      const lo = s.lo !== undefined ? s.lo : 0;
+      const hi = s.hi !== undefined ? s.hi : 100;
+      const midpoint = (lo + hi) / 2.0;
+
+      return {
+        id: s.id,
+        name: s.name,
+        label: s.label,
+        unit: s.unit || '°C',
+        value: isOpen ? null : midpoint,
+        status: isOpen ? 'OPEN' : 'NORMAL',
+        lolo: s.lolo || 0,
+        lo: lo,
+        hi: hi,
+        hihi: s.hihi || 100,
+        active: !isOpen
+      };
+    })
   };
 }
 
@@ -234,16 +241,24 @@ app.get('/api/history', (req, res) => {
     const phase = i * 0.2;
     const row = { timestamp };
     sensors.forEach((s, idx) => {
-      const target = s.target || 25.0;
-      const noise = (Math.sin(phase + idx) * 1.5) + ((Math.random() - 0.5) * 0.4);
-      row[s.id] = parseFloat((target + noise).toFixed(2));
+      const isOpen = s.id === 'CH8' || s.active === false;
+      if (isOpen) {
+        row[s.id] = null;
+      } else {
+        const lo = s.lo !== undefined ? s.lo : 0;
+        const hi = s.hi !== undefined ? s.hi : 100;
+        const midpoint = (lo + hi) / 2.0;
+        const span = Math.max(1, hi - lo);
+        const noise = (Math.sin(phase + idx) * (span * 0.15)) + ((Math.random() - 0.5) * 0.3);
+        row[s.id] = parseFloat((midpoint + noise).toFixed(2));
+      }
     });
     historyLogs.push(row);
   }
 
   res.json({
     rangeHours,
-    sensors: sensors.map(s => ({ id: s.id, label: s.label, name: s.name })),
+    sensors: sensors.map(s => ({ id: s.id, label: s.label, name: s.name, active: s.active !== false && s.id !== 'CH8' })),
     data: historyLogs
   });
 });

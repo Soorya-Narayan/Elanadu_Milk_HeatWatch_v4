@@ -85,32 +85,38 @@ class TelemetryPoller:
 
     def generate_mock_readings(self, sensors):
         """
-        Generates realistic industrial dairy telemetry with organic thermal sine-wave fluctuations and subtle noise.
+        Generates realistic industrial dairy telemetry matching configured Hi/Lo operating ranges.
+        Channel 8 and inactive channels return None (OPEN).
         """
         self.mock_phase += 0.05
         readings = {}
         
         for idx, sensor in enumerate(sensors):
             cid = sensor['id']
-            target = sensor.get('target', 25.0)
+            if not sensor.get('active', True) or cid == 'CH8':
+                readings[cid] = None
+                continue
+
+            lo = sensor.get('lo', 0.0)
+            hi = sensor.get('hi', 100.0)
             offset = sensor.get('offset', 0.0)
             
-            # Channel specific thermal kinetics
-            amplitude = 1.2 if 'Pasteurizer' in sensor['name'] else 0.4
-            noise = random.uniform(-0.15, 0.15)
+            # Midpoint temperature between set Lo and Hi operating thresholds
+            midpoint = (lo + hi) / 2.0
+            span = max(1.0, (hi - lo))
+            amplitude = span * 0.15
+            noise = random.uniform(-0.1, 0.1)
             wave = math.sin(self.mock_phase + idx * 0.8) * amplitude
-            
-            # Occasional simulated threshold bump for test visualizer
-            spike = 0.0
-            if random.random() < 0.02:
-                spike = random.uniform(-0.5, 0.5)
 
-            temp = round(target + wave + noise + offset + spike, 2)
+            temp = round(midpoint + wave + noise + offset, 2)
             readings[cid] = temp
 
         return readings
 
     def evaluate_status(self, temp, sensor):
+        if temp is None or not sensor.get('active', True) or sensor.get('id') == 'CH8':
+            return "OPEN"
+
         lolo = sensor.get('lolo', -50.0)
         lo = sensor.get('lo', -40.0)
         hi = sensor.get('hi', 85.0)
@@ -160,7 +166,7 @@ class TelemetryPoller:
 
         for sensor in sensors:
             cid = sensor['id']
-            temp = readings.get(cid, 0.0)
+            temp = readings.get(cid)
             status = self.evaluate_status(temp, sensor)
             
             if "CRITICAL" in status:
@@ -179,7 +185,7 @@ class TelemetryPoller:
                 "lo": sensor.get('lo'),
                 "hi": sensor.get('hi'),
                 "hihi": sensor.get('hihi'),
-                "target": sensor.get('target')
+                "active": sensor.get('active', True) if cid != 'CH8' else False
             }
             processed_channels.append(channel_entry)
 

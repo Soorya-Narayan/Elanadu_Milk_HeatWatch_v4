@@ -41,14 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     systemStatus: 'NORMAL',
     mode: 'HARDWARE_PPI',
     channels: [
-      { id: 'CH1', name: 'Pasteurizer_Heating', label: 'Pasteurizer Heating Zone', unit: '°C', value: 75.0, status: 'NORMAL', lolo: 60, lo: 68, hi: 88, hihi: 93, target: 75 },
-      { id: 'CH2', name: 'Pasteurizer_Holding', label: 'Pasteurizer Holding Tube', unit: '°C', value: 72.5, status: 'NORMAL', lolo: 65, lo: 70, hi: 80, hihi: 85, target: 72.5 },
-      { id: 'CH3', name: 'Pre_Chiller_Outlet', label: 'Pre-Chiller Milk Outlet', unit: '°C', value: 8.0, status: 'NORMAL', lolo: 3, lo: 5, hi: 18, hihi: 24, target: 8 },
-      { id: 'CH4', name: 'IBT_Chilled_Water', label: 'Ice Bank Tank Water', unit: '°C', value: 2.0, status: 'NORMAL', lolo: 0, lo: 1, hi: 5, hihi: 8, target: 2 },
-      { id: 'CH5', name: 'Raw_Milk_Silo_01', label: 'Raw Milk Storage Silo 1', unit: '°C', value: 3.5, status: 'NORMAL', lolo: 1, lo: 2, hi: 6, hihi: 8.5, target: 3.5 },
-      { id: 'CH6', name: 'Processed_Silo_02', label: 'Processed Milk Silo 2', unit: '°C', value: 3.5, status: 'NORMAL', lolo: 1, lo: 2, hi: 6, hihi: 8.5, target: 3.5 },
-      { id: 'CH7', name: 'Cold_Storage_Room', label: 'Finished Product Cold Room', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 0, lo: 2, hi: 6, hihi: 8, target: 4 },
-      { id: 'CH8', name: 'CIP_Rinse_Line', label: 'CIP Clean-In-Place Rinse', unit: '°C', value: 70.0, status: 'NORMAL', lolo: 25, lo: 50, hi: 82, hihi: 90, target: 70 }
+      { id: 'CH1', name: 'Pasteurizer_Heating', label: 'Pasteurizer Heating Zone', unit: '°C', value: 78.0, status: 'NORMAL', lolo: 60, lo: 68, hi: 88, hihi: 93, active: true },
+      { id: 'CH2', name: 'Pasteurizer_Holding', label: 'Pasteurizer Holding Tube', unit: '°C', value: 75.0, status: 'NORMAL', lolo: 65, lo: 70, hi: 80, hihi: 85, active: true },
+      { id: 'CH3', name: 'Pre_Chiller_Outlet', label: 'Pre-Chiller Milk Outlet', unit: '°C', value: 11.5, status: 'NORMAL', lolo: 3, lo: 5, hi: 18, hihi: 24, active: true },
+      { id: 'CH4', name: 'IBT_Chilled_Water', label: 'Ice Bank Tank Water', unit: '°C', value: 3.0, status: 'NORMAL', lolo: 0, lo: 1, hi: 5, hihi: 8, active: true },
+      { id: 'CH5', name: 'Raw_Milk_Silo_01', label: 'Raw Milk Storage Silo 1', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 1, lo: 2, hi: 6, hihi: 8.5, active: true },
+      { id: 'CH6', name: 'Processed_Silo_02', label: 'Processed Milk Silo 2', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 1, lo: 2, hi: 6, hihi: 8.5, active: true },
+      { id: 'CH7', name: 'Cold_Storage_Room', label: 'Finished Product Cold Room', unit: '°C', value: 4.0, status: 'NORMAL', lolo: 0, lo: 2, hi: 6, hihi: 8, active: true },
+      { id: 'CH8', name: 'Unused_Open_Channel', label: 'Unused / Open Channel', unit: '°C', value: null, status: 'OPEN', lolo: 0, lo: 0, hi: 100, hihi: 100, active: false }
     ]
   };
 
@@ -209,12 +209,16 @@ document.addEventListener('DOMContentLoaded', () => {
     elSensorGrid.innerHTML = '';
 
     channels.forEach((ch) => {
-      const isCritical = ch.status && ch.status.includes('CRITICAL');
-      const isWarning = ch.status && ch.status.includes('WARNING');
+      const isOpen = ch.id === 'CH8' || ch.status === 'OPEN' || ch.value === null || ch.value === undefined || ch.active === false;
+      const isCritical = !isOpen && ch.status && ch.status.includes('CRITICAL');
+      const isWarning = !isOpen && ch.status && ch.status.includes('WARNING');
 
       let pillHtml = '';
       let cardStateClass = '';
-      if (isCritical) {
+      if (isOpen) {
+        pillHtml = '<span class="ch-status-pill open">• OPEN</span>';
+        cardStateClass = 'card-open';
+      } else if (isCritical) {
         pillHtml = '<span class="ch-status-pill critical">• CRITICAL</span>';
         cardStateClass = 'card-critical';
       } else if (isWarning) {
@@ -222,10 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
         cardStateClass = 'card-warning';
       }
 
-      const tempStr = (ch.value !== undefined && ch.value !== null) ? ch.value.toFixed(1) : '--';
-      const minVal = (ch.lolo !== undefined) ? ch.lolo - 5 : 0;
-      const maxVal = (ch.hihi !== undefined) ? ch.hihi + 5 : 100;
-      const percent = Math.min(100, Math.max(0, ((ch.value - minVal) / (maxVal - minVal)) * 100));
+      const tempStr = isOpen ? 'OPEN' : ch.value.toFixed(1);
+      const unitStr = isOpen ? '' : (ch.unit || '°C');
+      const minVal = (ch.lolo !== undefined) ? ch.lolo : 0;
+      const maxVal = (ch.hihi !== undefined) ? ch.hihi : 100;
+      const percent = isOpen ? 0 : Math.min(100, Math.max(0, ((ch.value - minVal) / Math.max(1, maxVal - minVal)) * 100));
+
+      const bottomMetaHtml = isOpen
+        ? `<span>Status: Disconnected</span><span>CHANNEL OPEN</span>`
+        : `<span>Lo: ${ch.lo}°C | Hi: ${ch.hi}°C</span><span>HiHi: ${ch.hihi}°C</span>`;
 
       const cardHtml = `
         <div class="elanadu-card ${cardStateClass}">
@@ -237,8 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="ch-label-title">${ch.label}</div>
 
           <div class="ch-temp-row">
-            <span class="ch-temp-big">${tempStr}</span>
-            <span class="ch-temp-unit">${ch.unit || '°C'}</span>
+            <span class="ch-temp-big ${isOpen ? 'text-open' : ''}">${tempStr}</span>
+            ${unitStr ? `<span class="ch-temp-unit">${unitStr}</span>` : ''}
           </div>
 
           <div class="ch-divider-line">
@@ -246,8 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div class="ch-bottom-meta">
-            <span>Lo: ${ch.lo}°C | Hi: ${ch.hi}°C</span>
-            <span>HiHi: ${ch.hihi}°C</span>
+            ${bottomMetaHtml}
           </div>
         </div>
       `;
@@ -673,7 +681,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <td><input type="text" data-id="${s.id}" data-field="label" value="${s.label}" class="elanadu-input"></td>
           <td><input type="number" step="0.5" data-id="${s.id}" data-field="lolo" value="${s.lolo}" class="elanadu-input"></td>
           <td><input type="number" step="0.5" data-id="${s.id}" data-field="lo" value="${s.lo}" class="elanadu-input"></td>
-          <td><input type="number" step="0.5" data-id="${s.id}" data-field="target" value="${s.target}" class="elanadu-input"></td>
           <td><input type="number" step="0.5" data-id="${s.id}" data-field="hi" value="${s.hi}" class="elanadu-input"></td>
           <td><input type="number" step="0.5" data-id="${s.id}" data-field="hihi" value="${s.hihi}" class="elanadu-input"></td>
           <td><input type="number" step="0.1" data-id="${s.id}" data-field="offset" value="${s.offset || 0}" class="elanadu-input"></td>
