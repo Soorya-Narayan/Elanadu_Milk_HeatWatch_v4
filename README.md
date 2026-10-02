@@ -19,7 +19,7 @@
 
 ---
 
-## 📋 Executive Overview
+##  Executive Overview
 
 **HeatWatch 4 (Elanadu Milk Edition)** is an enterprise-grade industrial telemetry and temperature monitoring platform developed by **Goose Industrial Solutions** custom-engineered for **Elanadu Milk Products**.
 
@@ -29,7 +29,7 @@ The platform interfaces with **PPI AIME 8U Resistor Temperature Detector (RTD)**
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 HeatWatch v4 utilizes a decoupled, resilient architecture designed for 24/7 continuous industrial operation with auto-recovery and local time-series persistence.
 
@@ -67,25 +67,25 @@ HeatWatch v4 utilizes a decoupled, resilient architecture designed for 24/7 cont
 
 ---
 
-## ⚙️ Key System Capabilities
+##  Key System Capabilities
 
-* **📡 Multi-Channel RTD Sensor Integration**: Simultaneously samples 8 independent industrial RTD channels from PPI AIME 8U hardware over Modbus TCP / HTTP API.
-* **⚡ Real-Time WebSocket Telemetry**: Low-latency live telemetry stream to the web dashboard with sub-second status refreshes and visual indicator cards.
-* **🔔 Multi-Tiered Alarm & Threshold Management**:
+* **Multi-Channel RTD Sensor Integration**: Simultaneously samples 8 independent industrial RTD channels from PPI AIME 8U hardware over Modbus TCP / HTTP API.
+* **Real-Time WebSocket Telemetry**: Low-latency live telemetry stream to the web dashboard with sub-second status refreshes and visual indicator cards.
+* **Multi-Tiered Alarm & Threshold Management**:
   * Configurable **LoLo** (Extreme Low), **Lo** (Warning Low), **Hi** (Warning High), and **HiHi** (Extreme High) limits per sensor channel.
   * Hysteresis-aware threshold evaluation to prevent transient alarm flickering.
-* **🚨 Physical Relay & Hooter Actuation**: Dedicated hardware relay integration (`alarm_relay.py`) for powering external industrial sirens, strobe lights, or hooters upon critical HiHi/LoLo breaches.
-* **📊 Time-Series Logging & Analytics**:
+* **Physical Relay & Hooter Actuation**: Dedicated hardware relay integration (`alarm_relay.py`) for powering external industrial sirens, strobe lights, or hooters upon critical HiHi/LoLo breaches.
+* **Time-Series Logging & Analytics**:
   * Powered by InfluxDB v2 for millisecond-precision historical data retention.
   * Interactive multi-channel trend visualization (1-Hour, 6-Hour, 24-Hour, and 7-Day spans).
-* **📄 Quality Audit Data Export**: One-click generation of historical temperature logs in CSV, Excel, and PDF formats for regulatory dairy compliance checks.
-* **🖥️ SBC Health & Diagnostic Monitoring**: Real-time tracking of host single-board computer telemetry including CPU load, core temperature, RAM usage, disk health, InfluxDB database metrics, and Tailscale VPN connectivity.
-* **🔒 Password-Protected System Settings**: Admin console for channel calibration offset adjustment, threshold tuning, and system maintenance.
-* **📺 Auto-Boot Kiosk Launcher**: Production-ready systemd configuration for unattended kiosk operation on Raspberry Pi 5 touch consoles.
+* **Quality Audit Data Export**: One-click generation of historical temperature logs in CSV, Excel, and PDF formats for regulatory dairy compliance checks.
+* **SBC Health & Diagnostic Monitoring**: Real-time tracking of host single-board computer telemetry including CPU load, core temperature, RAM usage, disk health, InfluxDB database metrics, and Tailscale VPN connectivity.
+* **Password-Protected System Settings**: Admin console for channel calibration offset adjustment, threshold tuning, and system maintenance.
+* **Auto-Boot Kiosk Launcher**: Production-ready systemd configuration for unattended kiosk operation on Raspberry Pi 5 touch consoles.
 
 ---
 
-## 💻 Hardware & Software Specifications
+## Hardware & Software Specifications
 
 ### Hardware Requirements
 | Component | Specification / Recommendation |
@@ -108,7 +108,7 @@ HeatWatch v4 utilizes a decoupled, resilient architecture designed for 24/7 cont
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 HeatWatch4-Elanadu/
@@ -137,7 +137,7 @@ HeatWatch4-Elanadu/
 
 ---
 
-## 🚀 Installation & Quick Start
+##  Installation & Quick Start
 
 ### 1. Clone Repository & Navigate
 ```bash
@@ -166,7 +166,7 @@ Ensure InfluxDB v2 is running on `http://localhost:8086`. Verify or update defau
 
 ---
 
-## 🛠️ Production Deployment (Systemd & Kiosk Mode)
+##  Production Deployment (Systemd & Kiosk Mode)
 
 To set up auto-start on Raspberry Pi 5 touchscreen terminals, run the automated setup script:
 
@@ -192,7 +192,7 @@ sudo journalctl -u heatwatch-dashboard -f
 
 ---
 
-## 📡 REST API Reference
+##  REST API Reference
 
 The Node.js server (`server.js`) exposes the following HTTP endpoints for control and telemetry access:
 
@@ -210,7 +210,7 @@ The Node.js server (`server.js`) exposes the following HTTP endpoints for contro
 
 ---
 
-## 🤝 Support & Client Credits
+## Support & Client Credits
 
 * **Client**: Elanadu Milk Products, Kerala, India
 * **Developer**: Goose Industrial Solutions
